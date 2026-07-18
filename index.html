@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- Theme is applied before CSS load to prevent flash -->
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('tg-theme') || 'dark');</script>
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
@@ -22,9 +24,15 @@
         <p>हिंदी टाइपिंग परीक्षण</p>
       </div>
     </div>
-    <div class="nav-badge">
-      <span class="dot"></span>
-      Mangal · Devanagari · Inscript
+    <div class="nav-right">
+      <div class="nav-badge">
+        <span class="dot"></span>
+        Mangal · Devanagari · Inscript
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">
+        <span class="theme-icon-dark">🌙</span>
+        <span class="theme-icon-light">☀️</span>
+      </button>
     </div>
   </div>
 </header>

@@ -381,6 +381,25 @@ sel.addEventListener("change", reset);
 el("restartBtn").addEventListener("click", reset);
 el("againBtn").addEventListener("click", reset);
 
+/* ── Theme Toggle ── */
+const themeToggleBtn = el("themeToggle");
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("tg-theme", theme);
+}
+
+themeToggleBtn.addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme") || "dark";
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+
 /* ── Init ── */
+// Theme already set by inline script in HTML (prevents flash)
+// Ensure it's also saved to localStorage on first visit
+if (!localStorage.getItem("tg-theme")) {
+  localStorage.setItem("tg-theme", "dark");
+}
+
 fillSelect();
 reset();
