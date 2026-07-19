@@ -455,7 +455,7 @@ input[type=text]::placeholder { color: var(--text-3); }
   display: none;
   max-width: 440px;
   background: #1a1b2e;
-  border: 1px solid var(--border-2);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius);
   padding: 12px 14px;
   box-shadow: 0 16px 48px rgba(0,0,0,0.6), var(--grad-glow);
@@ -469,14 +469,14 @@ input[type=text]::placeholder { color: var(--text-3); }
 #tip .t-word {
   font-family: var(--dev);
   font-size: 16px;
-  color: var(--accent);
+  color: #a78bff;
   margin-bottom: 10px;
   font-weight: 600;
 }
 #tip .t-word small {
   font-family: var(--ui);
   font-size: 11px;
-  color: var(--text-3);
+  color: #9ba3c4;
   font-weight: 400;
   margin-left: 6px;
 }
@@ -488,14 +488,14 @@ input[type=text]::placeholder { color: var(--text-3); }
   padding: 5px 8px;
   text-align: center;
   min-width: 38px;
-}
-.chip .u  { font-family: var(--dev); font-size: 15px; line-height: 1.3; color: var(--text); }
+/* Chip colors are ALWAYS light since tooltip background is always dark */
+.chip .u  { font-family: var(--dev); font-size: 15px; line-height: 1.3; color: #e8eaff; }
 .chip .kk {
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 600;
-  color: var(--gold);
-  border-top: 1px solid var(--border);
+  color: #fbbf24;
+  border-top: 1px solid rgba(255,255,255,0.1);
   margin-top: 3px;
   padding-top: 2px;
   white-space: nowrap;
@@ -683,19 +683,65 @@ body.en .passage .word { cursor: text; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
 /* ── Light Theme Component Overrides ── */
-[data-theme="light"] select option           { background: #ffffff; color: #0f1020; }
-[data-theme="light"] .passage-card          { box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
-[data-theme="light"] .stat                  { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-[data-theme="light"] .settings             { box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
-[data-theme="light"] textarea               { background: #ffffff; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-[data-theme="light"] textarea:focus         { box-shadow: 0 0 0 3px rgba(124,106,255,0.15), 0 2px 12px rgba(0,0,0,0.06); }
-[data-theme="light"] #tip                   { background: #1a1b2e; } /* keep dark for readability */
-[data-theme="light"] .result                { background: #ffffff; box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 40px rgba(124,106,255,0.1); }
-[data-theme="light"] .r-head               { background: linear-gradient(135deg, rgba(124,106,255,0.08) 0%, rgba(91,139,255,0.06) 100%); }
-[data-theme="light"] .r-rows li:hover      { background: #f8f9ff; }
-[data-theme="light"] .r-foot               { background: #f8f9ff; }
-[data-theme="light"] .overlay              { background: rgba(10,10,20,0.6); }
-[data-theme="light"] .passage .word.active { background: rgba(124,106,255,0.1); outline-color: rgba(124,106,255,0.35); }
-[data-theme="light"] .seg                  { background: rgba(0,0,0,0.04); }
-[data-theme="light"] .seg button           { color: var(--text-2); }
-[data-theme="light"] .seg button:hover     { background: rgba(0,0,0,0.06); }
+
+/* Selects & Inputs */
+[data-theme="light"] select option            { background: #ffffff; color: #0f1020; }
+[data-theme="light"] select                   { background: #ffffff; color: #0f1020; }
+[data-theme="light"] input[type=text]         { background: #ffffff; color: #0f1020; }
+[data-theme="light"] input[type=text]::placeholder { color: #9094b0; }
+
+/* Settings bar */
+[data-theme="light"] .settings               { box-shadow: 0 2px 16px rgba(0,0,0,0.07); background: rgba(255,255,255,0.8); }
+[data-theme="light"] .set-label             { color: #6b7090; }
+
+/* Segmented controls */
+[data-theme="light"] .seg                    { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.12); }
+[data-theme="light"] .seg button             { color: #4a4d6a; background: transparent; }
+[data-theme="light"] .seg button:hover       { background: rgba(0,0,0,0.06); color: #0f1020; }
+[data-theme="light"] .seg button.active      { background: var(--grad); color: #fff; }
+
+/* Stats */
+[data-theme="light"] .stat                   { background: #ffffff; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+[data-theme="light"] .stat .k                { color: #6b7090; }
+
+/* Passage card */
+[data-theme="light"] .passage-card           { background: #ffffff; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+[data-theme="light"] .passage-card::before   { background: none; }
+[data-theme="light"] .passage               { color: #2d3060; }
+[data-theme="light"] .passage span.g.ok      { color: #059669; }
+[data-theme="light"] .passage span.g.bad     { color: #dc2626; background: rgba(220,38,38,0.08); }
+[data-theme="light"] .passage .word:hover    { background: rgba(124,106,255,0.08); }
+[data-theme="light"] .passage .word.active   { background: rgba(124,106,255,0.12); outline: 1.5px solid rgba(124,106,255,0.4); }
+
+/* Textarea */
+[data-theme="light"] textarea                { background: #ffffff; color: #0f1020; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+[data-theme="light"] textarea::placeholder   { color: #9094b0; }
+[data-theme="light"] textarea:focus          { box-shadow: 0 0 0 3px rgba(124,106,255,0.15), 0 2px 12px rgba(0,0,0,0.06); }
+
+/* Hint & warn */
+[data-theme="light"] .hint                   { color: #6b7090; }
+[data-theme="light"] .hint b                 { color: #4a4d6a; }
+[data-theme="light"] .warn                   { color: #b91c1c; background: rgba(220,38,38,0.07); border-color: rgba(220,38,38,0.2); }
+
+/* Tooltip: always dark — chip colors hardcoded in base styles */
+[data-theme="light"] #tip                    { border-color: rgba(255,255,255,0.12); }
+
+/* Buttons */
+[data-theme="light"] .btn-ghost              { background: #ffffff; color: #4a4d6a; border-color: rgba(0,0,0,0.12); }
+[data-theme="light"] .btn-ghost:hover        { background: #f0f1ff; color: #0f1020; }
+
+/* Nav badge */
+[data-theme="light"] .nav-badge             { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color: #4a4d6a; }
+[data-theme="light"] .theme-toggle           { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.12); }
+[data-theme="light"] .theme-toggle:hover     { background: rgba(124,106,255,0.1); }
+
+/* Result overlay & modal */
+[data-theme="light"] .overlay               { background: rgba(10,10,20,0.55); }
+[data-theme="light"] .result                { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 64px rgba(0,0,0,0.15), 0 0 40px rgba(124,106,255,0.08); }
+[data-theme="light"] .r-head               { background: linear-gradient(135deg, rgba(124,106,255,0.08) 0%, rgba(91,139,255,0.06) 100%); border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .r-head h2            { color: #0f1020; }
+[data-theme="light"] .r-rows li             { border-color: rgba(0,0,0,0.07); color: #0f1020; }
+[data-theme="light"] .r-rows li:hover       { background: #f5f6ff; }
+[data-theme="light"] .r-rows .lab           { color: #4a4d6a; }
+[data-theme="light"] .r-rows .val           { color: #0f1020; }
+[data-theme="light"] .r-foot               { background: #f8f9ff; border-color: rgba(0,0,0,0.07); }
