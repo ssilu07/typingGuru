@@ -754,7 +754,7 @@ body.en .passage .word { cursor: text; }
 [data-theme="light"] .r-rows .lab           { color: #4a4d6a; }
 [data-theme="light"] .r-rows .val           { color: #0f1020; }
 [data-theme="light"] .r-foot               { background: #f8f9ff; border-color: rgba(0,0,0,0.07); }
-/ *   N o   H i g h l i g h t   M o d e   * /  
- . p a s s a g e . n o - h i g h l i g h t   . w o r d . a c t i v e   {   b a c k g r o u n d :   t r a n s p a r e n t   ! i m p o r t a n t ;   o u t l i n e :   n o n e   ! i m p o r t a n t ;   }  
- . p a s s a g e . n o - h i g h l i g h t   s p a n . g . c u r   {   b o x - s h a d o w :   n o n e   ! i m p o r t a n t ;   }  
- 
+
+/* No Highlight Mode */
+.passage.no-highlight .word.active { background: transparent !important; outline: none !important; }
+.passage.no-highlight span.g.cur { box-shadow: none !important; }
