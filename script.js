@@ -376,6 +376,19 @@ document.querySelectorAll("#kbSeg button").forEach(b => {
   });
 });
 
+document.querySelectorAll("#hlSeg button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll("#hlSeg button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    if (b.dataset.hl === "off") {
+      el("passage").classList.add("no-highlight");
+    } else {
+      el("passage").classList.remove("no-highlight");
+    }
+    inputEl.focus();
+  });
+});
+
 el("langSel").addEventListener("change", () => {
   lang = el("langSel").value;
   document.body.classList.toggle("en", lang === "english");
