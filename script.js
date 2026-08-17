@@ -117,6 +117,7 @@ let durationSec = 120, timeLeft = 120, timerId = null, startTime = 0;
 let started = false, finished = false;
 let level = "medium", kbMode = "inscript", lang = "hindi";
 let wordsData = [];
+let backspaceCount = 0;
 
 const el = id => document.getElementById(id);
 const passageEl = el("passage"), inputEl = el("input"), tip = el("tip");
@@ -291,6 +292,7 @@ function finish() {
   el("rErr").textContent = s.badWords;
   el("rTotal").textContent = s.attempted;
   el("rKeys").textContent = s.keystrokes;
+  el("rBackspaces").textContent = backspaceCount;
   el("rErrRate").textContent = s.errRate.toFixed(2);
   el("rAcc").textContent = s.acc.toFixed(2);
   el("rGross").textContent = s.gross.toFixed(2);
@@ -302,6 +304,7 @@ function reset() {
   clearInterval(timerId); timerId = null;
   started = false; finished = false;
   startTime = 0;
+  backspaceCount = 0;
   timeLeft = durationSec;
   inputEl.value = ""; inputEl.disabled = false;
   timeV.textContent = fmt(timeLeft);
@@ -316,6 +319,7 @@ function reset() {
 
 /* ── Inscript Typing ── */
 inputEl.addEventListener("keydown", e => {
+  if (e.key === "Backspace") backspaceCount++;
   if (lang !== "hindi") return;
   if (kbMode !== "inscript") return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
