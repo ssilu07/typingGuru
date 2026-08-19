@@ -160,7 +160,7 @@ function graphemes(str) {
 /* ── State ── */
 let durationSec = 120, timeLeft = 120, timerId = null, startTime = 0;
 let started = false, finished = false;
-let level = "medium", kbMode = "inscript", lang = "hindi";
+let level = "medium", kbMode = "inscript", lang = "hindi", hlMode = localStorage.getItem("tg-hl") || "on";
 let wordsData = [];
 let backspaceCount = 0;
 
@@ -213,7 +213,7 @@ function loadPassage() {
     }
     wordsData.push({text: wtext, g: gs, el: wspan, spans: wspans, spaceSpan});
   });
-  if (wordsData[0]) {
+  if (wordsData[0] && hlMode !== "off") {
     wordsData[0].el.classList.add("active");
     wordsData[0].spans[0].classList.add("cur");
   }
@@ -355,18 +355,20 @@ function compare() {
     }
 
     // Color character spans
-    for (let i = 0; i < W.g.length; i++) {
-      const s = W.spans[i];
-      if (i < tw.length) {
-        if (tw[i] === W.g[i]) {
-          s.classList.add("ok");
-        } else if (mistakeType === "half") {
-          s.classList.add("half-bad");
-        } else {
-          s.classList.add("bad");
+    if (hlMode !== "off") {
+      for (let i = 0; i < W.g.length; i++) {
+        const s = W.spans[i];
+        if (i < tw.length) {
+          if (tw[i] === W.g[i]) {
+            s.classList.add("ok");
+          } else if (mistakeType === "half") {
+            s.classList.add("half-bad");
+          } else {
+            s.classList.add("bad");
+          }
+        } else if (!isCurrent) {
+          s.classList.add(mistakeType === "half" ? "half-bad" : "bad");
         }
-      } else if (!isCurrent) {
-        s.classList.add(mistakeType === "half" ? "half-bad" : "bad");
       }
     }
 
@@ -374,23 +376,27 @@ function compare() {
       attempted++;
       if (mistakeType === null) {
         okWords++;
-        if (W.spaceSpan) W.spaceSpan.classList.add("ok");
+        if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("ok");
       } else if (mistakeType === "half") {
         halfMistakes++;
-        if (W.spaceSpan) W.spaceSpan.classList.add("half-bad");
+        if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("half-bad");
       } else {
         fullMistakes++;
-        if (W.spaceSpan) W.spaceSpan.classList.add("bad");
+        if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("bad");
       }
     }
 
     if (isCurrent) {
-      W.el.classList.add("active");
+      if (hlMode !== "off") {
+        W.el.classList.add("active");
+      }
       let curSpan = null;
       if (tw.length < W.g.length) curSpan = W.spans[tw.length];
       else if (W.spaceSpan) curSpan = W.spaceSpan;
       if (curSpan) {
-        curSpan.classList.add("cur");
+        if (hlMode !== "off") {
+          curSpan.classList.add("cur");
+        }
         curSpan.scrollIntoView({block: "nearest"});
       }
     }
@@ -468,6 +474,11 @@ function reset() {
   overlay.classList.remove("show");
   engWarn.classList.remove("show");
   hideTip();
+  if (hlMode === "off") {
+    passageEl.classList.add("no-highlight");
+  } else {
+    passageEl.classList.remove("no-highlight");
+  }
   loadPassage();
   updateHintsAndPlaceholder();
   inputEl.focus();
@@ -540,11 +551,14 @@ document.querySelectorAll("#hlSeg button").forEach(b => {
   b.addEventListener("click", () => {
     document.querySelectorAll("#hlSeg button").forEach(x => x.classList.remove("active"));
     b.classList.add("active");
-    if (b.dataset.hl === "off") {
-      el("passage").classList.add("no-highlight");
+    hlMode = b.dataset.hl;
+    localStorage.setItem("tg-hl", hlMode);
+    if (hlMode === "off") {
+      passageEl.classList.add("no-highlight");
     } else {
-      el("passage").classList.remove("no-highlight");
+      passageEl.classList.remove("no-highlight");
     }
+    compare();
     inputEl.focus();
   });
 });
@@ -553,7 +567,7 @@ function updateHintsAndPlaceholder() {
   if (lang === "hindi") {
     el("hintHi").innerHTML = (level === "words")
       ? "💡 <b>Hard Words Mode</b>: कठिन शब्दों और संयुक्त अक्षरों का एक-एक करके अभ्यास करें। <b>Space</b> दबाते ही अगला शब्द आ जाएगा। <b>Hover over any word</b> to see Inscript keys."
-      : "💡 Jo word type kar rahe ho wo passage mein <b>purple highlight</b> rehta hai. <b>Space</b> dabate hi agla word aa jata hai — galat/adhura word laal ho jata hai par aage asar nahi karta. <b>Hover over any word</b> to see which keys to press (⇧ = Shift). Conjuncts क्ष (⇧&amp;), त्र (⇧^), ज्ञ (⇧%), श्र (⇧*) are single keys; for । press ⇧&gt;.";
+      : "💡 Jo word type kar rahe ho wo passage mein <b>purple highlight</b> rehta hai. <b>Space</b> dabate hi agla word aa jata hai — galat/adhura word laal ho jata par aage asar nahi karta. <b>Hover over any word</b> to see which keys to press (⇧ = Shift). Conjuncts क्ष (⇧&amp;), त्र (⇧^), ज्ञ (⇧%), श्र (⇧*) are single keys; for । press ⇧&gt;.";
     inputEl.placeholder = (level === "words")
       ? "कठिन शब्द यहाँ टाइप करना शुरू करें… हर शब्द के बाद Space दबाएं।"
       : "Start typing here… your full text stays visible. Press Space to move to the next word.";
@@ -602,6 +616,18 @@ themeToggleBtn.addEventListener("click", () => {
 // Ensure it's also saved to localStorage on first visit
 if (!localStorage.getItem("tg-theme")) {
   localStorage.setItem("tg-theme", "dark");
+}
+
+// Sync highlight toggle UI with saved hlMode
+document.querySelectorAll("#hlSeg button").forEach(b => {
+  if (b.dataset.hl === hlMode) {
+    b.classList.add("active");
+  } else {
+    b.classList.remove("active");
+  }
+});
+if (hlMode === "off") {
+  passageEl.classList.add("no-highlight");
 }
 
 fillSelect();

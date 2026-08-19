@@ -763,15 +763,18 @@ body.en .passage .word { cursor: text; }
 [data-theme="light"] .r-foot               { background: #f8f9ff; border-color: rgba(0,0,0,0.07); }
 
 /* No Highlight Mode */
-.passage.no-highlight .word {
+.passage.no-highlight .word,
+[data-theme="light"] .passage.no-highlight .word {
   background: transparent !important;
   outline: none !important;
   box-shadow: none !important;
 }
-.passage.no-highlight .word:hover {
+.passage.no-highlight .word:hover,
+[data-theme="light"] .passage.no-highlight .word:hover {
   background: transparent !important;
 }
-.passage.no-highlight .word.active {
+.passage.no-highlight .word.active,
+[data-theme="light"] .passage.no-highlight .word.active {
   background: transparent !important;
   outline: none !important;
   box-shadow: none !important;
@@ -780,7 +783,12 @@ body.en .passage .word { cursor: text; }
 .passage.no-highlight span.g.ok,
 .passage.no-highlight span.g.bad,
 .passage.no-highlight span.g.half-bad,
-.passage.no-highlight span.g.cur {
+.passage.no-highlight span.g.cur,
+[data-theme="light"] .passage.no-highlight span.g,
+[data-theme="light"] .passage.no-highlight span.g.ok,
+[data-theme="light"] .passage.no-highlight span.g.bad,
+[data-theme="light"] .passage.no-highlight span.g.half-bad,
+[data-theme="light"] .passage.no-highlight span.g.cur {
   color: inherit !important;
   background: transparent !important;
   text-decoration: none !important;
