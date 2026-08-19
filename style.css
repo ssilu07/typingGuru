@@ -779,8 +779,24 @@ body.en .passage .word { cursor: text; }
   outline: none !important;
   box-shadow: none !important;
 }
+
 .passage.no-highlight span.g,
 .passage.no-highlight span.g.ok,
+.passage.no-highlight span.g.bad,
+.passage.no-highlight span.g.half-bad,
+.passage.no-highlight span.g.cur,
+[data-theme="light"] .passage.no-highlight span.g,
+[data-theme="light"] .passage.no-highlight span.g.ok,
+[data-theme="light"] .passage.no-highlight span.g.bad,
+[data-theme="light"] .passage.no-highlight span.g.half-bad,
+[data-theme="light"] .passage.no-highlight span.g.cur {
+  color: inherit !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 /* ── Review Modal Styles ── */
 .review-modal {
   max-width: 960px;
