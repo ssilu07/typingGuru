@@ -440,6 +440,12 @@ input[type=text]::placeholder { color: var(--text-3); }
 }
 .passage span.g              { border-radius: 3px; }
 .passage span.g.ok           { color: var(--ok); }
+.passage span.g.half-bad     {
+  color: #fbbf24;
+  background: rgba(251,191,36,0.12);
+  text-decoration: underline;
+  text-decoration-color: #fbbf24;
+}
 .passage span.g.bad          {
   color: var(--bad);
   background: rgba(248,113,113,0.1);
@@ -652,10 +658,11 @@ textarea::placeholder { color: var(--text-3); font-size: 14px; font-family: var(
 .r-rows .lab { color: var(--text-2); font-weight: 500; }
 .r-rows .val { font-family: var(--mono); font-weight: 600; color: var(--text); }
 .r-rows .unit { font-size: 11px; color: var(--text-3); font-weight: 400; margin-left: 4px; }
-.val.green { color: var(--ok) !important; }
-.val.red   { color: var(--bad) !important; }
-.val.blue  { color: var(--accent) !important; }
-.val.cyan  { color: var(--cyan) !important; }
+.val.green  { color: var(--ok) !important; }
+.val.red    { color: var(--bad) !important; }
+.val.orange { color: #fbbf24 !important; }
+.val.blue   { color: var(--accent) !important; }
+.val.cyan   { color: var(--cyan) !important; }
 
 .r-foot {
   padding: 16px 24px;

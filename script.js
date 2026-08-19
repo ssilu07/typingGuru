@@ -267,37 +267,121 @@ function elapsedMin() {
   return Math.min(Math.max(m, 1 / 60), durationSec / 60);
 }
 
-/* ── Word Comparison ── */
+/* ── Word Comparison & Error Classification ── */
+const PUNCT_REGEX = /[\.,!?:;\"'()\-—–/\\“”‘’।]/g;
+function stripPunct(s) {
+  return (s || "").replace(PUNCT_REGEX, "");
+}
+
 function compare() {
   wordsData.forEach(w => {
     w.el.classList.remove("active");
-    w.spans.forEach(s => s.classList.remove("ok", "bad", "cur"));
-    if (w.spaceSpan) w.spaceSpan.classList.remove("ok", "bad", "cur");
+    w.spans.forEach(s => s.classList.remove("ok", "bad", "half-bad", "cur"));
+    if (w.spaceSpan) w.spaceSpan.classList.remove("ok", "bad", "half-bad", "cur");
   });
+
   let typedWords = inputEl.value.split(" ");
-  if (finished) { while (typedWords.length && typedWords[typedWords.length - 1] === "") typedWords.pop(); }
+  if (finished) {
+    while (typedWords.length && typedWords[typedWords.length - 1] === "") typedWords.pop();
+  }
   const lastIdx = typedWords.length - 1;
-  let okWords = 0, badWords = 0, attempted = 0;
+  const targetWords = wordsData.map(w => w.text);
+
+  let okWords = 0;
+  let fullMistakes = 0;
+  let halfMistakes = 0;
+  let attempted = 0;
+
+  // Pre-identify Transposition and Spacing Errors
+  const transposed = new Set();
+  const spacingErrors = new Set();
+
+  for (let wi = 0; wi < typedWords.length && wi < wordsData.length; wi++) {
+    const isCurrent = (wi === lastIdx) && !finished;
+    if (isCurrent) continue;
+
+    // Transposition: 2 adjacent words swapped
+    if (wi < typedWords.length - 1 && wi < targetWords.length - 1 && !transposed.has(wi)) {
+      if (typedWords[wi] === targetWords[wi + 1] && typedWords[wi + 1] === targetWords[wi] && typedWords[wi] !== targetWords[wi]) {
+        transposed.add(wi);
+        transposed.add(wi + 1);
+      }
+    }
+
+    // Spacing merged: typed word combines current and next target word
+    if (wi < targetWords.length - 1 && typedWords[wi] === targetWords[wi] + targetWords[wi + 1]) {
+      spacingErrors.add(wi);
+    }
+    // Spacing split: current typed word + next typed word equals current target word
+    if (wi < typedWords.length - 1 && typedWords[wi] + typedWords[wi + 1] === targetWords[wi]) {
+      spacingErrors.add(wi);
+    }
+  }
 
   for (let wi = 0; wi < typedWords.length && wi < wordsData.length; wi++) {
     const tw = graphemes(typedWords[wi]);
     const W = wordsData[wi];
     const isCurrent = (wi === lastIdx) && !finished;
+    const typedWord = typedWords[wi];
+    const targetWord = W.text;
 
+    let mistakeType = null; // null (clean match), "half", "full"
+
+    if (typedWord === targetWord) {
+      mistakeType = null;
+    } else if (transposed.has(wi)) {
+      mistakeType = "half";
+    } else if (spacingErrors.has(wi)) {
+      mistakeType = "half";
+    } else {
+      const strippedTyped = stripPunct(typedWord);
+      const strippedTarget = stripPunct(targetWord);
+
+      // Punctuation error (Hindi or English)
+      if (strippedTyped === strippedTarget && strippedTyped.length > 0) {
+        mistakeType = "half";
+      } else if (lang === "english") {
+        // Wrong Capitalisation (English only)
+        if (typedWord.toLowerCase() === targetWord.toLowerCase()) {
+          mistakeType = "half";
+        } else if (strippedTyped.toLowerCase() === strippedTarget.toLowerCase() && strippedTyped.length > 0) {
+          mistakeType = "half";
+        } else {
+          mistakeType = "full";
+        }
+      } else {
+        mistakeType = "full";
+      }
+    }
+
+    // Color character spans
     for (let i = 0; i < W.g.length; i++) {
       const s = W.spans[i];
       if (i < tw.length) {
-        s.classList.add(tw[i] === W.g[i] ? "ok" : "bad");
+        if (tw[i] === W.g[i]) {
+          s.classList.add("ok");
+        } else if (mistakeType === "half") {
+          s.classList.add("half-bad");
+        } else {
+          s.classList.add("bad");
+        }
       } else if (!isCurrent) {
-        s.classList.add("bad");
+        s.classList.add(mistakeType === "half" ? "half-bad" : "bad");
       }
     }
 
     if (!isCurrent) {
       attempted++;
-      if (typedWords[wi] === W.text) okWords++;
-      else badWords++;
-      if (W.spaceSpan) W.spaceSpan.classList.add("ok");
+      if (mistakeType === null) {
+        okWords++;
+        if (W.spaceSpan) W.spaceSpan.classList.add("ok");
+      } else if (mistakeType === "half") {
+        halfMistakes++;
+        if (W.spaceSpan) W.spaceSpan.classList.add("half-bad");
+      } else {
+        fullMistakes++;
+        if (W.spaceSpan) W.spaceSpan.classList.add("bad");
+      }
     }
 
     if (isCurrent) {
@@ -311,8 +395,24 @@ function compare() {
       }
     }
   }
-  for (let wi = wordsData.length; wi < typedWords.length; wi++) { attempted++; badWords++; }
-  return {okWords, badWords, attempted};
+
+  // Extra words typed beyond passage length count as Full Mistakes (Addition)
+  for (let wi = wordsData.length; wi < typedWords.length; wi++) {
+    attempted++;
+    fullMistakes++;
+  }
+
+  const totalMistakes = fullMistakes + (halfMistakes * 0.5);
+  const pureWords = Math.max(0, attempted - totalMistakes);
+
+  return {
+    okWords,
+    fullMistakes,
+    halfMistakes,
+    totalMistakes,
+    pureWords,
+    attempted
+  };
 }
 
 /* ── Stats ── */
@@ -320,14 +420,15 @@ function updateStats() {
   const s = compare();
   const min = elapsedMin();
   const keystrokes = Array.from(inputEl.value).length;
-  const gross = (keystrokes / 5) / min;
-  const errRate = s.badWords / min;
-  const net = Math.max(0, gross - errRate);
-  const acc = s.attempted ? (s.okWords / s.attempted * 100) : 100;
-  wpmV.textContent = started ? net.toFixed(1) : "0";
-  accV.textContent = acc.toFixed(0) + "%";
-  errV.textContent = s.badWords;
-  return {...s, min, gross, errRate, net, acc, keystrokes};
+  const totalPassageWords = wordsData.length;
+  const speed = min > 0 ? (s.attempted / min) : 0;
+  const acc = totalPassageWords > 0 ? ((s.pureWords * 100) / totalPassageWords) : 0;
+
+  wpmV.textContent = started ? speed.toFixed(1) : "0";
+  accV.textContent = acc.toFixed(1) + "%";
+  errV.textContent = started ? `${s.fullMistakes} / ${s.halfMistakes}` : "0 / 0";
+
+  return {...s, min, speed, acc, totalPassageWords, keystrokes};
 }
 
 /* ── Finish & Reset ── */
@@ -339,16 +440,18 @@ function finish() {
   const s = updateStats();
   const name = el("nameIn").value.trim();
   el("rName").textContent = name || "—";
-  el("rWpm").textContent = s.net.toFixed(2);
-  el("rOk").textContent = s.okWords;
-  el("rErr").textContent = s.badWords;
+  el("rWpm").textContent = s.speed.toFixed(2);
+  if (el("rPassageTotal")) el("rPassageTotal").textContent = s.totalPassageWords;
   el("rTotal").textContent = s.attempted;
+  if (el("rPure")) el("rPure").textContent = (Number.isInteger(s.pureWords) ? s.pureWords : s.pureWords.toFixed(1));
+  if (el("rFullErr")) el("rFullErr").textContent = s.fullMistakes;
+  if (el("rHalfErr")) el("rHalfErr").textContent = s.halfMistakes;
+  if (el("rTotalErr")) el("rTotalErr").textContent = (Number.isInteger(s.totalMistakes) ? s.totalMistakes : s.totalMistakes.toFixed(1));
   el("rKeys").textContent = s.keystrokes;
   el("rBackspaces").textContent = backspaceCount;
-  el("rErrRate").textContent = s.errRate.toFixed(2);
   el("rAcc").textContent = s.acc.toFixed(2);
-  el("rGross").textContent = s.gross.toFixed(2);
-  el("rTime").textContent = s.min.toFixed(1);
+  el("rGross").textContent = s.speed.toFixed(2);
+  el("rTime").textContent = s.min.toFixed(2);
   overlay.classList.add("show");
 }
 
@@ -361,7 +464,7 @@ function reset() {
   inputEl.value = ""; inputEl.disabled = false;
   timeV.textContent = fmt(timeLeft);
   el("timerStat").classList.remove("low");
-  wpmV.textContent = "0"; accV.textContent = "100%"; errV.textContent = "0";
+  wpmV.textContent = "0"; accV.textContent = "0%"; errV.textContent = "0 / 0";
   overlay.classList.remove("show");
   engWarn.classList.remove("show");
   hideTip();
