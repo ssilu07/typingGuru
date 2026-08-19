@@ -1,377 +1,369 @@
 <!DOCTYPE html>
 <!-- Theme is applied before CSS load to prevent flash -->
-<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('tg-theme') || 'light');</script>
-<html lang="en">
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('tg-theme') || 'dark');</script>
+<html lang="hi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Typing Test — UP Police SI/ASI/Computer Operator &amp; Legal Typing Exam</title>
-  <meta name="description" content="Official UP Police SI/ASI, Legal, and High Court typing test interface with accurate serif font, real-time timer, word-by-word error review, and inscript/system typing support.">
+  <title>TypingGuru — Hindi &amp; English Typing Test</title>
+  <meta name="description" content="Premium Hindi and English typing test with Inscript keyboard, real-time WPM tracking, accuracy stats, and detailed results. Built with Mangal/Noto Devanagari font.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2.1">
 </head>
 <body class="font-md">
 
-  <!-- ── 1. Top Royal Blue Bar ── -->
-  <div class="exam-header-top">
-    <div class="exam-header-title" id="testHeaderTitle">Typing Test Id 39041 - Legal - Criminal Negligence Liability - Passage 9</div>
+<!-- ── Header ── -->
+<header>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon">⌨</div>
+      <div class="logo-text">
+        <h1>TypingGuru</h1>
+        <p>हिंदी &amp; English टाइपिंग परीक्षण</p>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-badge">
+        <span class="dot"></span>
+        UP Police · Mangal Inscript · Legal
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle light/dark theme">
+        <span class="theme-icon-dark">🌙</span>
+        <span class="theme-icon-light">☀️</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main>
+
+  <!-- Settings Bar -->
+  <div class="settings">
+    <div class="set-group">
+      <span class="set-label">Language</span>
+      <select id="langSel" style="font-family:var(--ui)">
+        <option value="hindi">हिंदी (Mangal)</option>
+        <option value="english">English</option>
+      </select>
+    </div>
+
+    <div class="set-group">
+      <span class="set-label">Name</span>
+      <input type="text" id="nameIn" placeholder="Your name" value="SUMIT" maxlength="30">
+    </div>
+
+    <div class="set-group">
+      <span class="set-label">Level</span>
+      <div class="seg" id="lvlSeg">
+        <button data-lvl="easy">Easy</button>
+        <button data-lvl="medium" class="active">Medium</button>
+        <button data-lvl="hard">Hard</button>
+        <button data-lvl="words">Hard Words</button>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <span class="set-label" id="passageLabel">Passage</span>
+      <select id="passageSel"></select>
+    </div>
+
+    <div class="set-group">
+      <span class="set-label">Time</span>
+      <div class="seg" id="durSeg">
+        <button data-min="1">1 min</button>
+        <button data-min="2">2 min</button>
+        <button data-min="5">5 min</button>
+        <button data-min="10">10 min</button>
+        <button data-min="15" class="active">15 min</button>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <span class="set-label">Highlight</span>
+      <div class="seg" id="hlSeg">
+        <button data-hl="on" class="active">On</button>
+        <button data-hl="off">Off</button>
+      </div>
+    </div>
+
+    <div class="set-group" id="kbGroup">
+      <span class="set-label">Keyboard</span>
+      <div class="seg" id="kbSeg">
+        <button data-kb="inscript" class="active">Inscript (built-in)</button>
+        <button data-kb="system">System</button>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" id="restartBtn">↺ Restart</button>
   </div>
 
-  <!-- ── 2. Black Sub-Header Bar ── -->
-  <div class="exam-header-sub">
-    <div class="exam-sub-title" id="testSubTitle">UP Police SI/ASI/Computer Operator English Typing</div>
+  <!-- Stats Bar -->
+  <div class="stats">
+    <div class="stat timer" id="timerStat">
+      <div class="k">Time Left</div>
+      <div class="v" id="timeV">15:00</div>
+    </div>
+    <div class="stat">
+      <div class="k">Speed (WPM)</div>
+      <div class="v" id="wpmV">0</div>
+    </div>
+    <div class="stat">
+      <div class="k">Accuracy</div>
+      <div class="v" id="accV">0%</div>
+    </div>
+    <div class="stat">
+      <div class="k">Wrong (Full / Half)</div>
+      <div class="v" id="errV">0 / 0</div>
+    </div>
   </div>
 
-  <!-- ── 3. Control & Info Bar ── -->
-  <div class="exam-control-bar">
-    <div class="control-left">
-      <div class="exam-pill">
-        <!-- Audio Toggle Button -->
-        <button type="button" class="pill-btn" id="audioToggleBtn" title="Toggle Keypress Sound" aria-label="Toggle sound">
-          <svg class="pill-icon" id="audioIconMute" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-          <svg class="pill-icon" id="audioIconOn" style="display:none;" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-          </svg>
-        </button>
+  <!-- ── Exam Interface Container ── -->
+  <div class="exam-panel">
+    <!-- Top Royal Blue Header Bar -->
+    <div class="exam-header-top">
+      <div class="exam-header-title" id="testHeaderTitle">Typing Test Id 39041 - Legal - Criminal Negligence Liability - Passage 9</div>
+    </div>
 
-        <!-- Fullscreen Button -->
-        <button type="button" class="pill-btn" id="fullscreenBtn" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
-          <svg class="pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <polyline points="9 21 3 21 3 15"></polyline>
-            <line x1="21" y1="3" x2="14" y2="10"></line>
-            <line x1="3" y1="21" x2="10" y2="14"></line>
-          </svg>
-        </button>
+    <!-- Black Sub-Header Bar -->
+    <div class="exam-header-sub">
+      <div class="exam-sub-title" id="testSubTitle">UP Police SI/ASI/Computer Operator English Typing</div>
+    </div>
 
-        <!-- Font Size Controls (A-, A, A+) -->
-        <div class="font-size-group" id="fontSizeGroup">
-          <button type="button" class="font-btn" data-size="sm" title="Small Font">A-</button>
-          <button type="button" class="font-btn active" data-size="md" title="Standard Font">A</button>
-          <button type="button" class="font-btn" data-size="lg" title="Large Font">A+</button>
+    <!-- Control & Candidate Info Bar -->
+    <div class="exam-control-bar">
+      <div class="control-left">
+        <div class="exam-pill">
+          <!-- Audio Toggle Button -->
+          <button type="button" class="pill-btn" id="audioToggleBtn" title="Toggle Keypress Sound" aria-label="Toggle sound">
+            <svg class="pill-icon" id="audioIconMute" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            <svg class="pill-icon" id="audioIconOn" style="display:none;" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
+
+          <!-- Fullscreen Button -->
+          <button type="button" class="pill-btn" id="fullscreenBtn" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
+            <svg class="pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <polyline points="9 21 3 21 3 15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          </button>
+
+          <!-- Font Size Selector (A-, A, A+) -->
+          <div class="font-size-group" id="fontSizeGroup">
+            <button type="button" class="font-btn" data-size="sm" title="Small Font">A-</button>
+            <button type="button" class="font-btn active" data-size="md" title="Standard Font">A</button>
+            <button type="button" class="font-btn" data-size="lg" title="Large Font">A+</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-right">
+        <!-- Exam Timer -->
+        <div class="exam-timer-box">
+          <span class="timer-label">Time left:-</span>
+          <span class="timer-val" id="examTimeV">15:00</span>
+        </div>
+
+        <!-- Candidate Avatar + Name -->
+        <div class="candidate-box">
+          <div class="candidate-avatar">
+            <svg viewBox="0 0 64 64" width="46" height="46" fill="none">
+              <defs>
+                <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#4a90e2" />
+                  <stop offset="100%" stop-color="#1f4b8e" />
+                </linearGradient>
+                <radialGradient id="headGrad" cx="40%" cy="35%" r="60%">
+                  <stop offset="0%" stop-color="#80b3ff" />
+                  <stop offset="60%" stop-color="#3d75c2" />
+                  <stop offset="100%" stop-color="#193f77" />
+                </radialGradient>
+              </defs>
+              <rect width="64" height="64" rx="8" fill="#dce6f2" />
+              <circle cx="32" cy="22" r="12" fill="url(#headGrad)" />
+              <path d="M12 56 C12 40, 20 37, 32 37 C44 37, 52 40, 52 56 Z" fill="url(#avatarGrad)" />
+            </svg>
+          </div>
+          <div class="candidate-name" id="candidateNameDisp">SUMIT</div>
         </div>
       </div>
     </div>
 
-    <div class="control-right">
-      <!-- Timer Display -->
-      <div class="exam-timer-box" id="timerStat">
-        <span class="timer-label">Time left:-</span>
-        <span class="timer-val" id="timeV">14:47</span>
-      </div>
-
-      <!-- Candidate Box -->
-      <div class="candidate-box">
-        <div class="candidate-avatar">
-          <svg viewBox="0 0 64 64" width="46" height="46" fill="none">
-            <defs>
-              <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4a90e2" />
-                <stop offset="100%" stop-color="#1f4b8e" />
-              </linearGradient>
-              <radialGradient id="headGrad" cx="40%" cy="35%" r="60%">
-                <stop offset="0%" stop-color="#80b3ff" />
-                <stop offset="60%" stop-color="#3d75c2" />
-                <stop offset="100%" stop-color="#193f77" />
-              </radialGradient>
-            </defs>
-            <rect width="64" height="64" rx="8" fill="#dce6f2" />
-            <!-- Silhouette Head -->
-            <circle cx="32" cy="22" r="12" fill="url(#headGrad)" />
-            <!-- Silhouette Shoulders -->
-            <path d="M12 56 C12 40, 20 37, 32 37 C44 37, 52 40, 52 56 Z" fill="url(#avatarGrad)" />
-          </svg>
-        </div>
-        <div class="candidate-name" id="candidateNameDisp">SUMIT</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── 4. Main Exam Body ── -->
-  <main class="exam-main">
     <!-- Upper Passage Box -->
-    <div class="passage-box-container">
+    <div class="passage-card exam-passage-box">
       <div class="passage" id="passage" aria-label="Passage to type"></div>
     </div>
 
-    <!-- Lower Typing Box -->
-    <div class="typing-box-container">
-      <textarea id="input" lang="en" spellcheck="false" autocomplete="off"
-        placeholder="Start typing here… your text will flow smoothly. Press Space to move to the next word."></textarea>
-    </div>
-
-    <!-- Warnings / Inline Notifications -->
-    <div class="warn" id="engWarn">⚠ English letters detected. Switch to <b>Inscript (built-in)</b> mode in settings, or enable a Hindi keyboard on your system — this test is Hindi-only.</div>
-
-    <!-- Hidden Stats Anchor for Engine -->
-    <div class="stats-hidden" style="display:none;">
-      <span id="wpmV">0</span>
-      <span id="accV">0%</span>
-      <span id="errV">0 / 0</span>
-    </div>
-  </main>
-
-  <!-- ── 5. Floating Action Button (Purple FAB for Settings) ── -->
-  <button class="fab-settings-btn" id="fabSettingsBtn" title="Exam Settings &amp; Options" aria-label="Open Settings">
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"></circle>
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-    </svg>
-  </button>
-
-  <!-- ── 6. Settings Modal / Drawer ── -->
-  <div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="setDrawerTitle">
-    <div class="settings-drawer">
-      <div class="set-drawer-head">
-        <h2 id="setDrawerTitle">⚙ Exam Settings &amp; Configuration</h2>
-        <button type="button" class="btn-close-modal" id="closeSettingsBtn" title="Close Settings">✕</button>
-      </div>
-
-      <div class="set-drawer-body">
-        <!-- Exam Mode / Title -->
-        <div class="set-field">
-          <label class="set-field-lbl" for="examPresetSel">Target Examination</label>
-          <select id="examPresetSel" class="form-ctrl">
-            <option value="uppolice_en">UP Police SI/ASI/Computer Operator English Typing</option>
-            <option value="uppolice_hi">UP Police SI/ASI/Computer Operator Hindi Typing</option>
-            <option value="ahc_ro">Allahabad High Court RO/ARO / Legal Typing</option>
-            <option value="ssc_cgl">SSC CGL / CHSL DEST Typing Test</option>
-            <option value="cpct_exam">CPCT / State Govt Typing Exam</option>
-          </select>
-        </div>
-
-        <!-- Language -->
-        <div class="set-field">
-          <label class="set-field-lbl" for="langSel">Language</label>
-          <select id="langSel" class="form-ctrl">
-            <option value="english">English</option>
-            <option value="hindi">हिंदी (Mangal / Inscript)</option>
-          </select>
-        </div>
-
-        <!-- Candidate Name -->
-        <div class="set-field">
-          <label class="set-field-lbl" for="nameIn">Candidate Name</label>
-          <input type="text" id="nameIn" class="form-ctrl" value="SUMIT" placeholder="Candidate Name" maxlength="30">
-        </div>
-
-        <!-- Level / Category -->
-        <div class="set-field">
-          <label class="set-field-lbl">Difficulty / Category</label>
-          <div class="seg" id="lvlSeg">
-            <button type="button" data-lvl="easy">Easy</button>
-            <button type="button" data-lvl="medium">Medium</button>
-            <button type="button" data-lvl="hard" class="active">Legal / Hard</button>
-            <button type="button" data-lvl="words">Hard Words</button>
-          </div>
-        </div>
-
-        <!-- Passage Selection -->
-        <div class="set-field">
-          <label class="set-field-lbl" for="passageSel">Select Passage</label>
-          <select id="passageSel" class="form-ctrl"></select>
-        </div>
-
-        <!-- Duration Selection -->
-        <div class="set-field">
-          <label class="set-field-lbl">Test Duration</label>
-          <div class="seg" id="durSeg">
-            <button type="button" data-min="1">1 min</button>
-            <button type="button" data-min="2">2 min</button>
-            <button type="button" data-min="5">5 min</button>
-            <button type="button" data-min="10">10 min</button>
-            <button type="button" data-min="15" class="active">15 min</button>
-          </div>
-        </div>
-
-        <!-- Word Highlighting -->
-        <div class="set-field">
-          <label class="set-field-lbl">Word Highlighting</label>
-          <div class="seg" id="hlSeg">
-            <button type="button" data-hl="on" class="active">On (Helpful)</button>
-            <button type="button" data-hl="off">Off (Exam Real)</button>
-          </div>
-        </div>
-
-        <!-- Keyboard Mode (Hindi Only) -->
-        <div class="set-field" id="kbGroup" style="display:none;">
-          <label class="set-field-lbl">Hindi Keyboard Input</label>
-          <div class="seg" id="kbSeg">
-            <button type="button" data-kb="inscript" class="active">Inscript (Built-in)</button>
-            <button type="button" data-kb="system">System Keyboard</button>
-          </div>
-        </div>
-
-        <!-- Audio Click Sound -->
-        <div class="set-field">
-          <label class="set-field-lbl">Keystroke Sound</label>
-          <div class="seg" id="soundSeg">
-            <button type="button" data-sound="off" class="active">Mute</button>
-            <button type="button" data-sound="on">Key Click</button>
-          </div>
-        </div>
-
-        <!-- Theme Mode -->
-        <div class="set-field">
-          <label class="set-field-lbl">Appearance Theme</label>
-          <div class="seg" id="themeSeg">
-            <button type="button" data-theme="light" class="active">Exam Light</button>
-            <button type="button" data-theme="dark">Dark Theme</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="set-drawer-foot">
-        <button type="button" class="btn btn-ghost" id="drawerCloseDoneBtn">Close</button>
-        <button type="button" class="btn btn-primary" id="restartBtn">↺ Restart Test</button>
-      </div>
+    <!-- Lower Typing Box (Lime Green) -->
+    <div class="typing-card exam-typing-box">
+      <textarea id="input" lang="hi" spellcheck="false" autocomplete="off"
+        placeholder="Start typing here… your full text stays visible. Press Space to move to the next word."></textarea>
     </div>
   </div>
 
-  <!-- ── 7. Tooltip for Inscript ── -->
-  <div id="tip"></div>
+  <!-- Warning -->
+  <div class="warn" id="engWarn">⚠ English letters detected. Switch to <b>Inscript (built-in)</b> mode above, or enable a Hindi keyboard on your system — this test is Hindi-only.</div>
 
-  <!-- ── 8. Result Overlay ── -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="rTitle">
-    <div class="result">
-      <div class="r-head">
-        <h2 id="rTitle">Typing Test Examination Result</h2>
-        <span class="trophy">🏆</span>
-      </div>
-      <div class="r-hero">
-        <div class="r-wpm-value"><span id="rWpm">0.00</span> WPM</div>
-        <div class="r-wpm-label">Net Typing Speed (Gross: <span id="rGross">0.00</span> WPM)</div>
-      </div>
-      <ul class="r-rows">
-        <li><span class="lab">Candidate Name:</span><span class="val" id="rName">SUMIT</span></li>
-        <li><span class="lab">Passage Total Words:</span><span class="val"><span id="rPassageTotal">0</span><span class="unit">word(s)</span></span></li>
-        <li><span class="lab">Total Typed Words:</span><span class="val"><span id="rTotal">0</span><span class="unit">word(s)</span></span></li>
-        <li><span class="lab">Pure Words (शुद्ध शब्द):</span><span class="val green"><span id="rPure">0</span><span class="unit">word(s)</span></span></li>
-        <li><span class="lab">Full Mistakes (पूरी गलती):</span><span class="val red"><span id="rFullErr">0</span><span class="unit">mistake(s)</span></span></li>
-        <li><span class="lab">Half Mistakes (आधी गलती):</span><span class="val orange"><span id="rHalfErr">0</span><span class="unit">mistake(s)</span></span></li>
-        <li><span class="lab">Total Mistakes (कुल गलतियाँ):</span><span class="val red"><span id="rTotalErr">0.0</span><span class="unit">mistake(s)</span></span></li>
-        <li><span class="lab">Accuracy (शुद्धता):</span><span class="val blue"><span id="rAcc">0.00</span><span class="unit">%</span></span></li>
-        <li><span class="lab">Test Duration Elapsed:</span><span class="val"><span id="rTime">0.0</span><span class="unit">min(s)</span></span></li>
-        <li><span class="lab">Key Depressions:</span><span class="val"><span id="rKeys">0</span><span class="unit">keys</span></span></li>
-        <li><span class="lab">Backspaces Used:</span><span class="val red"><span id="rBackspaces">0</span><span class="unit">times</span></span></li>
-      </ul>
-      <div class="r-foot">
-        <button type="button" class="btn btn-secondary" id="reviewBtn">🔍 Review Mistakes &amp; Words</button>
-        <button type="button" class="btn btn-danger" id="againBtn">↺ Retake Test</button>
-      </div>
+  <!-- Hints -->
+  <p class="hint" id="hintHi">
+    💡 Jo word type kar rahe ho wo passage mein <b>purple highlight</b> rehta hai. <b>Space</b> dabate hi agla word aa jata hai — galat/adhura word laal ho jata hai par aage asar nahi karta.
+    <b>Hover over any word</b> to see which keys to press (⇧ = Shift). Conjuncts क्ष (⇧&amp;), त्र (⇧^), ज्ञ (⇧%), श्र (⇧*) are single keys; for । press ⇧&gt;.
+  </p>
+  <p class="hint" id="hintEn" style="display:none">
+    💡 The word you are typing stays <b>highlighted in purple</b> in the passage. Press <b>Space</b> to move to the next word — a wrong or unfinished word turns red but never affects the next one. Type normally with your English keyboard.
+  </p>
+
+</main>
+
+<!-- Tooltip -->
+<div id="tip"></div>
+
+<!-- Result Overlay -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+  <div class="result">
+    <div class="r-head">
+      <h2 id="rTitle">Test Result</h2>
+      <span class="trophy">🏆</span>
+    </div>
+    <div class="r-hero">
+      <div class="r-wpm-value"><span id="rWpm">0.00</span> WPM</div>
+      <div class="r-wpm-label">Typing Speed</div>
+    </div>
+    <ul class="r-rows">
+      <li><span class="lab">User Name:</span><span class="val" id="rName">SUMIT</span></li>
+      <li><span class="lab">Passage Total Words:</span><span class="val"><span id="rPassageTotal">0</span><span class="unit">word(s)</span></span></li>
+      <li><span class="lab">Total Typed Words:</span><span class="val"><span id="rTotal">0</span><span class="unit">word(s)</span></span></li>
+      <li><span class="lab">Pure Words (शुद्ध शब्द):</span><span class="val green"><span id="rPure">0</span><span class="unit">word(s)</span></span></li>
+      <li><span class="lab">Full Mistakes (पूरी गलती):</span><span class="val red"><span id="rFullErr">0</span><span class="unit">mistake(s)</span></span></li>
+      <li><span class="lab">Half Mistakes (आधी गलती):</span><span class="val orange"><span id="rHalfErr">0</span><span class="unit">mistake(s)</span></span></li>
+      <li><span class="lab">Total Mistakes (कुल गलतियाँ):</span><span class="val red"><span id="rTotalErr">0.0</span><span class="unit">mistake(s)</span></span></li>
+      <li><span class="lab">Accuracy (शुद्धता):</span><span class="val blue"><span id="rAcc">0.00</span><span class="unit">%</span></span></li>
+      <li><span class="lab">Speed (गति):</span><span class="val cyan"><span id="rGross">0.00</span><span class="unit">wpm</span></span></li>
+      <li><span class="lab">Total Time:</span><span class="val"><span id="rTime">0.0</span><span class="unit">min(s)</span></span></li>
+      <li><span class="lab">Key Depressions:</span><span class="val"><span id="rKeys">0</span><span class="unit">keys</span></span></li>
+      <li><span class="lab">Backspaces:</span><span class="val red"><span id="rBackspaces">0</span><span class="unit">times</span></span></li>
+    </ul>
+    <div class="r-foot">
+      <button class="btn btn-secondary" id="reviewBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">🔍 Review Mistakes</button>
+      <button class="btn btn-danger" id="againBtn">↺ Retake Test</button>
     </div>
   </div>
+</div>
 
-  <!-- ── 9. Review Overlay ── -->
-  <div class="overlay" id="reviewOverlay" role="dialog" aria-modal="true" aria-labelledby="revTitle">
-    <div class="result review-modal">
-      <div class="r-head rev-head">
-        <div class="rev-head-info">
-          <div class="rev-title-row">
-            <h2 id="revTitle">Test Review &amp; Error Analysis <span class="badge-tag">गलतियों का विश्लेषण</span></h2>
-            <button type="button" class="btn-close-modal" id="closeReviewBtn" aria-label="Close Review" title="Close Review">✕</button>
-          </div>
-          <div class="rev-pills">
-            <span class="rev-pill pill-pure">Pure: <b id="revPure">0</b></span>
-            <span class="rev-pill pill-full">Full: <b id="revFull">0</b></span>
-            <span class="rev-pill pill-half">Half: <b id="revHalf">0</b></span>
-            <span class="rev-pill pill-penalty">Penalty: <b id="revTotalErr">0</b></span>
-            <span class="rev-pill pill-acc">Accuracy: <b id="revAcc">0%</b></span>
-            <span class="rev-pill pill-speed">Speed: <b id="revSpeed">0 WPM</b></span>
-          </div>
+<!-- Review Overlay -->
+<div class="overlay" id="reviewOverlay" role="dialog" aria-modal="true" aria-labelledby="revTitle">
+  <div class="result review-modal">
+    <div class="r-head rev-head">
+      <div class="rev-head-info">
+        <div class="rev-title-row">
+          <h2 id="revTitle">Test Review &amp; Error Analysis <span class="badge-tag">गलतियों का विश्लेषण</span></h2>
+          <button class="theme-toggle" id="closeReviewBtn" aria-label="Close Review" title="Close Review" style="width:32px;height:32px;font-size:14px;">✕</button>
         </div>
-      </div>
-
-      <div class="rev-body">
-        <!-- Section: Visual Passage Breakdown -->
-        <div class="rev-card">
-          <div class="rev-card-header">
-            <div class="rev-card-title">
-              <span class="card-icon">📖</span>
-              <b>Passage Word-by-Word Review</b>
-            </div>
-            <div class="rev-legend">
-              <span class="leg leg-ok"><span class="dot"></span> Correct</span>
-              <span class="leg leg-half"><span class="dot"></span> Half Mistake (0.5)</span>
-              <span class="leg leg-full"><span class="dot"></span> Full Mistake (1.0)</span>
-              <span class="leg leg-skip"><span class="dot"></span> Unattempted</span>
-            </div>
-          </div>
-          <div class="rev-passage-box">
-            <div class="rev-passage" id="revPassage"></div>
-          </div>
-          <div class="rev-detail-card" id="revDetailCard" style="display:none;">
-            <div class="rd-header">
-              <span class="rd-badge" id="rdBadge">Full Mistake</span>
-              <span class="rd-index" id="rdIndex">Word #1</span>
-            </div>
-            <div class="rd-grid">
-              <div class="rd-col">
-                <span class="rd-lbl">Expected in Passage (मूल शब्द):</span>
-                <span class="rd-val target" id="rdTarget">—</span>
-              </div>
-              <div class="rd-col">
-                <span class="rd-lbl">You Typed (टंकित शब्द):</span>
-                <span class="rd-val typed" id="rdTyped">—</span>
-              </div>
-            </div>
-            <div class="rd-reason">
-              <span class="rd-lbl">Mistake Reason (गलती का कारण):</span>
-              <span class="rd-text" id="rdReason">—</span>
-            </div>
-          </div>
+        <div class="rev-pills">
+          <span class="rev-pill pill-pure">Pure: <b id="revPure">0</b></span>
+          <span class="rev-pill pill-full">Full: <b id="revFull">0</b></span>
+          <span class="rev-pill pill-half">Half: <b id="revHalf">0</b></span>
+          <span class="rev-pill pill-penalty">Penalty: <b id="revTotalErr">0</b></span>
+          <span class="rev-pill pill-acc">Accuracy: <b id="revAcc">0%</b></span>
+          <span class="rev-pill pill-speed">Speed: <b id="revSpeed">0 WPM</b></span>
         </div>
-
-        <!-- Section: Itemized Mistakes List -->
-        <div class="rev-card">
-          <div class="rev-card-header flex-between">
-            <div class="rev-card-title">
-              <span class="card-icon">📋</span>
-              <b>Itemized Mistakes List</b>
-            </div>
-            <div class="seg" id="revFilterSeg">
-              <button type="button" data-filter="mistakes" class="active">All Mistakes (<span id="cntMistakes">0</span>)</button>
-              <button type="button" data-filter="full">Full (<span id="cntFull">0</span>)</button>
-              <button type="button" data-filter="half">Half (<span id="cntHalf">0</span>)</button>
-              <button type="button" data-filter="all">All Words (<span id="cntAll">0</span>)</button>
-            </div>
-          </div>
-
-          <div class="rev-table-container">
-            <table class="rev-table">
-              <thead>
-                <tr>
-                  <th style="width:45px">#</th>
-                  <th>Expected (मूल शब्द)</th>
-                  <th>Typed (टंकित शब्द)</th>
-                  <th>Category</th>
-                  <th>Reason / Rule (नियम)</th>
-                  <th style="width:70px">Penalty</th>
-                </tr>
-              </thead>
-              <tbody id="revTableBody"></tbody>
-            </table>
-            <div class="rev-empty" id="revEmpty" style="display:none;">
-              🎉 शानदार! इस श्रेणी में कोई गलती नहीं है।
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="r-foot rev-foot">
-        <button type="button" class="btn btn-ghost" id="revBackResultBtn">← View Result Card</button>
-        <button type="button" class="btn btn-danger" id="revRetakeBtn">↺ Retake Test</button>
       </div>
     </div>
-  </div>
 
-  <script src="script.js?v=2.0" defer></script>
+    <div class="rev-body">
+      <!-- Section: Visual Passage Breakdown -->
+      <div class="rev-card">
+        <div class="rev-card-header">
+          <div class="rev-card-title">
+            <span class="card-icon">📖</span>
+            <b>Passage Word-by-Word Review</b>
+          </div>
+          <div class="rev-legend">
+            <span class="leg leg-ok"><span class="dot"></span> Correct</span>
+            <span class="leg leg-half"><span class="dot"></span> Half Mistake (0.5)</span>
+            <span class="leg leg-full"><span class="dot"></span> Full Mistake (1.0)</span>
+            <span class="leg leg-skip"><span class="dot"></span> Unattempted</span>
+          </div>
+        </div>
+        <div class="rev-passage-box">
+          <div class="rev-passage" id="revPassage"></div>
+        </div>
+        <div class="rev-detail-card" id="revDetailCard" style="display:none;">
+          <div class="rd-header">
+            <span class="rd-badge" id="rdBadge">Full Mistake</span>
+            <span class="rd-index" id="rdIndex">Word #1</span>
+          </div>
+          <div class="rd-grid">
+            <div class="rd-col">
+              <span class="rd-lbl">Expected in Passage (मूल शब्द):</span>
+              <span class="rd-val target" id="rdTarget">—</span>
+            </div>
+            <div class="rd-col">
+              <span class="rd-lbl">You Typed (टंकित शब्द):</span>
+              <span class="rd-val typed" id="rdTyped">—</span>
+            </div>
+          </div>
+          <div class="rd-reason">
+            <span class="rd-lbl">Mistake Reason (गलती का कारण):</span>
+            <span class="rd-text" id="rdReason">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Itemized Mistakes List -->
+      <div class="rev-card">
+        <div class="rev-card-header flex-between">
+          <div class="rev-card-title">
+            <span class="card-icon">📋</span>
+            <b>Itemized Mistakes List</b>
+          </div>
+          <div class="seg" id="revFilterSeg">
+            <button data-filter="mistakes" class="active">All Mistakes (<span id="cntMistakes">0</span>)</button>
+            <button data-filter="full">Full (<span id="cntFull">0</span>)</button>
+            <button data-filter="half">Half (<span id="cntHalf">0</span>)</button>
+            <button data-filter="all">All Words (<span id="cntAll">0</span>)</button>
+          </div>
+        </div>
+
+        <div class="rev-table-container">
+          <table class="rev-table">
+            <thead>
+              <tr>
+                <th style="width:45px">#</th>
+                <th>Expected (मूल शब्द)</th>
+                <th>Typed (टंकित शब्द)</th>
+                <th>Category</th>
+                <th>Reason / Rule (नियम)</th>
+                <th style="width:70px">Penalty</th>
+              </tr>
+            </thead>
+            <tbody id="revTableBody"></tbody>
+          </table>
+          <div class="rev-empty" id="revEmpty" style="display:none;">
+            🎉 शानदार! इस श्रेणी में कोई गलती नहीं है।
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r-foot rev-foot">
+      <button class="btn btn-ghost" id="revBackResultBtn">← View Result Card</button>
+      <button class="btn btn-danger" id="revRetakeBtn">↺ Retake Test</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js?v=2.1" defer></script>
 </body>
 </html>
