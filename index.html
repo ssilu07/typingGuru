@@ -171,11 +171,115 @@
       <li><span class="lab">Backspaces:</span><span class="val red"><span id="rBackspaces">0</span><span class="unit">times</span></span></li>
     </ul>
     <div class="r-foot">
+      <button class="btn btn-secondary" id="reviewBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">🔍 Review Mistakes</button>
       <button class="btn btn-danger" id="againBtn">↺ Retake Test</button>
     </div>
   </div>
 </div>
 
-<script src="script.js?v=1.1" defer></script>
+<!-- Review Overlay -->
+<div class="overlay" id="reviewOverlay" role="dialog" aria-modal="true" aria-labelledby="revTitle">
+  <div class="result review-modal">
+    <div class="r-head rev-head">
+      <div class="rev-head-info">
+        <div class="rev-title-row">
+          <h2 id="revTitle">Test Review &amp; Error Analysis <span class="badge-tag">गलतियों का विश्लेषण</span></h2>
+          <button class="theme-toggle" id="closeReviewBtn" aria-label="Close Review" title="Close Review" style="width:32px;height:32px;font-size:14px;">✕</button>
+        </div>
+        <div class="rev-pills">
+          <span class="rev-pill pill-pure">Pure: <b id="revPure">0</b></span>
+          <span class="rev-pill pill-full">Full: <b id="revFull">0</b></span>
+          <span class="rev-pill pill-half">Half: <b id="revHalf">0</b></span>
+          <span class="rev-pill pill-penalty">Penalty: <b id="revTotalErr">0</b></span>
+          <span class="rev-pill pill-acc">Accuracy: <b id="revAcc">0%</b></span>
+          <span class="rev-pill pill-speed">Speed: <b id="revSpeed">0 WPM</b></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rev-body">
+      <!-- Section: Visual Passage Breakdown -->
+      <div class="rev-card">
+        <div class="rev-card-header">
+          <div class="rev-card-title">
+            <span class="card-icon">📖</span>
+            <b>Passage Word-by-Word Review</b>
+          </div>
+          <div class="rev-legend">
+            <span class="leg leg-ok"><span class="dot"></span> Correct</span>
+            <span class="leg leg-half"><span class="dot"></span> Half Mistake (0.5)</span>
+            <span class="leg leg-full"><span class="dot"></span> Full Mistake (1.0)</span>
+            <span class="leg leg-skip"><span class="dot"></span> Unattempted</span>
+          </div>
+        </div>
+        <div class="rev-passage-box">
+          <div class="rev-passage" id="revPassage"></div>
+        </div>
+        <div class="rev-detail-card" id="revDetailCard" style="display:none;">
+          <div class="rd-header">
+            <span class="rd-badge" id="rdBadge">Full Mistake</span>
+            <span class="rd-index" id="rdIndex">Word #1</span>
+          </div>
+          <div class="rd-grid">
+            <div class="rd-col">
+              <span class="rd-lbl">Expected in Passage (मूल शब्द):</span>
+              <span class="rd-val target" id="rdTarget">—</span>
+            </div>
+            <div class="rd-col">
+              <span class="rd-lbl">You Typed (टंकित शब्द):</span>
+              <span class="rd-val typed" id="rdTyped">—</span>
+            </div>
+          </div>
+          <div class="rd-reason">
+            <span class="rd-lbl">Mistake Reason (गलती का कारण):</span>
+            <span class="rd-text" id="rdReason">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Itemized Mistakes List -->
+      <div class="rev-card">
+        <div class="rev-card-header flex-between">
+          <div class="rev-card-title">
+            <span class="card-icon">📋</span>
+            <b>Itemized Mistakes List</b>
+          </div>
+          <div class="seg" id="revFilterSeg">
+            <button data-filter="mistakes" class="active">All Mistakes (<span id="cntMistakes">0</span>)</button>
+            <button data-filter="full">Full (<span id="cntFull">0</span>)</button>
+            <button data-filter="half">Half (<span id="cntHalf">0</span>)</button>
+            <button data-filter="all">All Words (<span id="cntAll">0</span>)</button>
+          </div>
+        </div>
+
+        <div class="rev-table-container">
+          <table class="rev-table">
+            <thead>
+              <tr>
+                <th style="width:45px">#</th>
+                <th>Expected (मूल शब्द)</th>
+                <th>Typed (टंकित शब्द)</th>
+                <th>Category</th>
+                <th>Reason / Rule (नियम)</th>
+                <th style="width:70px">Penalty</th>
+              </tr>
+            </thead>
+            <tbody id="revTableBody"></tbody>
+          </table>
+          <div class="rev-empty" id="revEmpty" style="display:none;">
+            🎉 शानदार! इस श्रेणी में कोई गलती नहीं है।
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r-foot rev-foot">
+      <button class="btn btn-ghost" id="revBackResultBtn">← View Result Card</button>
+      <button class="btn btn-danger" id="revRetakeBtn">↺ Retake Test</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js?v=1.2" defer></script>
 </body>
 </html>

@@ -273,6 +273,9 @@ function stripPunct(s) {
   return (s || "").replace(PUNCT_REGEX, "");
 }
 
+let lastTestStats = null;
+let currentReviewFilter = "mistakes";
+
 function compare() {
   wordsData.forEach(w => {
     w.el.classList.remove("active");
@@ -318,6 +321,8 @@ function compare() {
     }
   }
 
+  const reviewItems = [];
+
   for (let wi = 0; wi < typedWords.length && wi < wordsData.length; wi++) {
     const tw = graphemes(typedWords[wi]);
     const W = wordsData[wi];
@@ -326,13 +331,21 @@ function compare() {
     const targetWord = W.text;
 
     let mistakeType = null; // null (clean match), "half", "full"
+    let category = "Correct / शुद्ध";
+    let reason = "सही शब्द (Word matches perfectly)";
 
     if (typedWord === targetWord) {
       mistakeType = null;
+      category = "Correct / शुद्ध";
+      reason = "सही शब्द (Word matches target)";
     } else if (transposed.has(wi)) {
       mistakeType = "half";
+      category = "Transposition / शब्दों का उलट-पलट";
+      reason = `शब्दों का क्रम बदल गया (Transposed with adjacent word)`;
     } else if (spacingErrors.has(wi)) {
       mistakeType = "half";
+      category = "Spacing Error / स्पेस की गलती";
+      reason = "स्पेस छूट गया या अतिरिक्त स्पेस लग गया (Merged or split words)";
     } else {
       const strippedTyped = stripPunct(typedWord);
       const strippedTarget = stripPunct(targetWord);
@@ -340,17 +353,27 @@ function compare() {
       // Punctuation error (Hindi or English)
       if (strippedTyped === strippedTarget && strippedTyped.length > 0) {
         mistakeType = "half";
+        category = "Punctuation / विराम चिह्न";
+        reason = `विराम चिह्न छूटा या गलत लगा (Punctuation difference: expected "${targetWord}")`;
       } else if (lang === "english") {
         // Wrong Capitalisation (English only)
         if (typedWord.toLowerCase() === targetWord.toLowerCase()) {
           mistakeType = "half";
+          category = "Capitalisation / छोटा-बड़ा अक्षर";
+          reason = `कैपिटल/स्मॉल अक्षर की अशुद्धि (Case mismatch: expected "${targetWord}")`;
         } else if (strippedTyped.toLowerCase() === strippedTarget.toLowerCase() && strippedTyped.length > 0) {
           mistakeType = "half";
+          category = "Punctuation & Case";
+          reason = `विराम चिह्न व केस दोनों में अशुद्धि (Case & punctuation mismatch: expected "${targetWord}")`;
         } else {
           mistakeType = "full";
+          category = "Spelling / गलत शब्द";
+          reason = `हिज्जे या शब्द गलत है (Spelling error / wrong word: expected "${targetWord}")`;
         }
       } else {
         mistakeType = "full";
+        category = "Spelling / गलत शब्द";
+        reason = `मात्रा, वर्ण या शब्द गलत है (Spelling error: expected "${targetWord}")`;
       }
     }
 
@@ -384,6 +407,16 @@ function compare() {
         fullMistakes++;
         if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("bad");
       }
+
+      reviewItems.push({
+        index: wi + 1,
+        targetWord,
+        typedWord,
+        status: mistakeType === null ? "ok" : mistakeType,
+        category,
+        reason,
+        penalty: mistakeType === null ? 0 : (mistakeType === "half" ? 0.5 : 1.0)
+      });
     }
 
     if (isCurrent) {
@@ -406,6 +439,31 @@ function compare() {
   for (let wi = wordsData.length; wi < typedWords.length; wi++) {
     attempted++;
     fullMistakes++;
+    reviewItems.push({
+      index: wi + 1,
+      targetWord: "— (गद्यांश समाप्त)",
+      typedWord: typedWords[wi],
+      status: "full",
+      category: "Extra Word / अतिरिक्त शब्द",
+      reason: "गद्यांश की सीमा से बाहर अतिरिक्त शब्द टाइप किया गया (Extra word beyond passage).",
+      penalty: 1.0
+    });
+  }
+
+  // Unattempted words
+  const unattemptedItems = [];
+  if (finished) {
+    for (let wi = typedWords.length; wi < wordsData.length; wi++) {
+      unattemptedItems.push({
+        index: wi + 1,
+        targetWord: wordsData[wi].text,
+        typedWord: "—",
+        status: "skip",
+        category: "Unattempted / छूटा हुआ शब्द",
+        reason: "समय समाप्त होने के कारण यह शब्द टाइप नहीं हो पाया (Not attempted within time).",
+        penalty: 0
+      });
+    }
   }
 
   const totalMistakes = fullMistakes + (halfMistakes * 0.5);
@@ -417,7 +475,9 @@ function compare() {
     halfMistakes,
     totalMistakes,
     pureWords,
-    attempted
+    attempted,
+    reviewItems,
+    unattemptedItems
   };
 }
 
@@ -444,6 +504,8 @@ function finish() {
   clearInterval(timerId);
   inputEl.disabled = true;
   const s = updateStats();
+  lastTestStats = s;
+
   const name = el("nameIn").value.trim();
   el("rName").textContent = name || "—";
   el("rWpm").textContent = s.speed.toFixed(2);
@@ -466,12 +528,14 @@ function reset() {
   started = false; finished = false;
   startTime = 0;
   backspaceCount = 0;
+  lastTestStats = null;
   timeLeft = durationSec;
   inputEl.value = ""; inputEl.disabled = false;
   timeV.textContent = fmt(timeLeft);
   el("timerStat").classList.remove("low");
   wpmV.textContent = "0"; accV.textContent = "0%"; errV.textContent = "0 / 0";
   overlay.classList.remove("show");
+  if (el("reviewOverlay")) el("reviewOverlay").classList.remove("show");
   engWarn.classList.remove("show");
   hideTip();
   if (hlMode === "off") {
@@ -482,6 +546,159 @@ function reset() {
   loadPassage();
   updateHintsAndPlaceholder();
   inputEl.focus();
+}
+
+/* ── Review Mode Functions ── */
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function showWordDetail(item) {
+  const detailCard = el("revDetailCard");
+  const badge = el("rdBadge");
+  badge.className = `rd-badge badge-${item.status}`;
+  badge.textContent = item.status === "ok" ? "Correct (शुद्ध)"
+    : item.status === "half" ? "Half Mistake (0.5)"
+    : item.status === "full" ? "Full Mistake (1.0)"
+    : "Unattempted (छूटा हुआ)";
+
+  el("rdIndex").textContent = `Word #${item.index}`;
+  el("rdTarget").textContent = item.targetWord;
+  el("rdTyped").textContent = item.typedWord;
+  el("rdReason").textContent = item.reason;
+  detailCard.style.display = "block";
+}
+
+function renderReviewPassage(stats) {
+  const revPassageEl = el("revPassage");
+  revPassageEl.innerHTML = "";
+  el("revDetailCard").style.display = "none";
+
+  const allItems = [...stats.reviewItems, ...stats.unattemptedItems];
+  
+  allItems.forEach((item, i) => {
+    const span = document.createElement("span");
+    span.className = `rev-word w-${item.status}`;
+    span.textContent = (item.status === "full" && item.targetWord.startsWith("—")) ? item.typedWord : item.targetWord;
+    span.dataset.idx = i;
+    
+    span.addEventListener("click", () => {
+      revPassageEl.querySelectorAll(".rev-word").forEach(w => w.classList.remove("w-selected"));
+      span.classList.add("w-selected");
+      showWordDetail(item);
+    });
+
+    revPassageEl.appendChild(span);
+    revPassageEl.appendChild(document.createTextNode(" "));
+  });
+
+  const firstMistake = allItems.find(it => it.status === "full" || it.status === "half") || allItems[0];
+  if (firstMistake) {
+    const idx = allItems.indexOf(firstMistake);
+    const span = revPassageEl.querySelector(`[data-idx="${idx}"]`);
+    if (span) {
+      span.classList.add("w-selected");
+      showWordDetail(firstMistake);
+    }
+  }
+}
+
+function renderReviewTable(stats, filter) {
+  currentReviewFilter = filter;
+  const tbody = el("revTableBody");
+  tbody.innerHTML = "";
+  const empty = el("revEmpty");
+
+  const allItems = [...stats.reviewItems, ...stats.unattemptedItems];
+  let filtered = [];
+
+  if (filter === "mistakes") {
+    filtered = stats.reviewItems.filter(it => it.status === "full" || it.status === "half");
+  } else if (filter === "full") {
+    filtered = stats.reviewItems.filter(it => it.status === "full");
+  } else if (filter === "half") {
+    filtered = stats.reviewItems.filter(it => it.status === "half");
+  } else {
+    filtered = allItems;
+  }
+
+  const mistakesCount = stats.fullMistakes + stats.halfMistakes;
+  el("cntMistakes").textContent = mistakesCount;
+  el("cntFull").textContent = stats.fullMistakes;
+  el("cntHalf").textContent = stats.halfMistakes;
+  el("cntAll").textContent = allItems.length;
+
+  if (filtered.length === 0) {
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  filtered.forEach(item => {
+    const tr = document.createElement("tr");
+    const badgeClass = item.status;
+    const badgeText = item.status === "ok" ? "Correct"
+      : item.status === "half" ? "Half (0.5)"
+      : item.status === "full" ? "Full (1.0)"
+      : "Skip";
+
+    tr.innerHTML = `
+      <td>${item.index}</td>
+      <td class="dev-text" style="color:var(--ok)"><b>${escapeHtml(item.targetWord)}</b></td>
+      <td class="dev-text" style="color:${item.status === 'ok' ? 'var(--ok)' : (item.status === 'half' ? '#fbbf24' : 'var(--bad)')}">
+        <b>${escapeHtml(item.typedWord)}</b>
+      </td>
+      <td><span class="tb-badge ${badgeClass}">${badgeText}</span></td>
+      <td>${escapeHtml(item.reason)}</td>
+      <td style="font-family:var(--mono);font-weight:600;color:${item.penalty > 0 ? 'var(--bad)' : 'var(--text-3)'}">
+        ${item.penalty > 0 ? `-${item.penalty}` : '0.0'}
+      </td>
+    `;
+
+    tr.addEventListener("click", () => {
+      const revPassageEl = el("revPassage");
+      const allItems = [...stats.reviewItems, ...stats.unattemptedItems];
+      const idx = allItems.indexOf(item);
+      if (idx !== -1) {
+        const span = revPassageEl.querySelector(`[data-idx="${idx}"]`);
+        if (span) {
+          revPassageEl.querySelectorAll(".rev-word").forEach(w => w.classList.remove("w-selected"));
+          span.classList.add("w-selected");
+          span.scrollIntoView({behavior: "smooth", block: "center"});
+          showWordDetail(item);
+        }
+      }
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function openReviewModal() {
+  if (!lastTestStats) return;
+  overlay.classList.remove("show");
+  
+  el("revPure").textContent = Number.isInteger(lastTestStats.pureWords) ? lastTestStats.pureWords : lastTestStats.pureWords.toFixed(1);
+  el("revFull").textContent = lastTestStats.fullMistakes;
+  el("revHalf").textContent = lastTestStats.halfMistakes;
+  el("revTotalErr").textContent = Number.isInteger(lastTestStats.totalMistakes) ? lastTestStats.totalMistakes : lastTestStats.totalMistakes.toFixed(1);
+  el("revAcc").textContent = lastTestStats.acc.toFixed(2) + "%";
+  el("revSpeed").textContent = lastTestStats.speed.toFixed(2) + " WPM";
+
+  renderReviewPassage(lastTestStats);
+  renderReviewTable(lastTestStats, "mistakes");
+
+  document.querySelectorAll("#revFilterSeg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.filter === "mistakes");
+  });
+
+  el("reviewOverlay").classList.add("show");
+}
+
+function closeReviewModal() {
+  el("reviewOverlay").classList.remove("show");
+  overlay.classList.add("show");
 }
 
 /* ── Inscript Typing ── */
@@ -597,6 +814,23 @@ el("langSel").addEventListener("change", () => {
 sel.addEventListener("change", reset);
 el("restartBtn").addEventListener("click", reset);
 el("againBtn").addEventListener("click", reset);
+el("reviewBtn").addEventListener("click", openReviewModal);
+el("closeReviewBtn").addEventListener("click", closeReviewModal);
+el("revBackResultBtn").addEventListener("click", closeReviewModal);
+el("revRetakeBtn").addEventListener("click", () => {
+  el("reviewOverlay").classList.remove("show");
+  reset();
+});
+
+document.querySelectorAll("#revFilterSeg button").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll("#revFilterSeg button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    if (lastTestStats) {
+      renderReviewTable(lastTestStats, b.dataset.filter);
+    }
+  });
+});
 
 /* ── Theme Toggle ── */
 const themeToggleBtn = el("themeToggle");
