@@ -298,25 +298,26 @@
   <div class="result">
     <div class="r-head">
       <h2 id="rTitle">Test Result</h2>
-      <span class="trophy">🏆</span>
+      <span class="trophy" id="rTrophy">🏆</span>
     </div>
     <div class="r-hero">
       <div class="r-wpm-value"><span id="rWpm">0.00</span> WPM</div>
-      <div class="r-wpm-label">Typing Speed</div>
+      <div class="r-wpm-label" id="rWpmLabel">Net Typing Speed (शुद्ध गति)</div>
+      <div class="r-qual-badge qual-pass" id="rQualBadge">QUALIFIED (उत्तीर्ण)</div>
     </div>
     <ul class="r-rows">
-      <li><span class="lab">User Name:</span><span class="val" id="rName">SUMIT</span></li>
+      <li><span class="lab">Candidate Name:</span><span class="val" id="rName">SUMIT</span></li>
       <li><span class="lab">Passage Total Words:</span><span class="val"><span id="rPassageTotal">0</span><span class="unit">word(s)</span></span></li>
-      <li><span class="lab">Total Typed Words:</span><span class="val"><span id="rTotal">0</span><span class="unit">word(s)</span></span></li>
+      <li><span class="lab">Total Attempted (कुल शब्द):</span><span class="val"><span id="rTotal">0</span><span class="unit">word(s)</span></span></li>
       <li><span class="lab">Pure Words (शुद्ध शब्द):</span><span class="val green"><span id="rPure">0</span><span class="unit">word(s)</span></span></li>
       <li><span class="lab">Full Mistakes (पूरी गलती):</span><span class="val red"><span id="rFullErr">0</span><span class="unit">mistake(s)</span></span></li>
       <li><span class="lab">Half Mistakes (आधी गलती):</span><span class="val orange"><span id="rHalfErr">0</span><span class="unit">mistake(s)</span></span></li>
-      <li><span class="lab">Total Mistakes (कुल गलतियाँ):</span><span class="val red"><span id="rTotalErr">0.0</span><span class="unit">mistake(s)</span></span></li>
+      <li><span class="lab">Total Penalties (कुल गलतियाँ):</span><span class="val red"><span id="rTotalErr">0.0</span><span class="unit">mistake(s)</span></span></li>
       <li><span class="lab">Accuracy (शुद्धता):</span><span class="val blue"><span id="rAcc">0.00</span><span class="unit">%</span></span></li>
-      <li><span class="lab">Speed (गति):</span><span class="val cyan"><span id="rGross">0.00</span><span class="unit">wpm</span></span></li>
+      <li><span class="lab">Gross Speed (सकल गति):</span><span class="val cyan"><span id="rGross">0.00</span><span class="unit">wpm</span></span></li>
       <li><span class="lab">Total Time:</span><span class="val"><span id="rTime">0.0</span><span class="unit">min(s)</span></span></li>
       <li><span class="lab">Key Depressions:</span><span class="val"><span id="rKeys">0</span><span class="unit">keys</span></span></li>
-      <li><span class="lab">Backspaces:</span><span class="val red"><span id="rBackspaces">0</span><span class="unit">times</span></span></li>
+      <li><span class="lab">Backspaces Used:</span><span class="val red"><span id="rBackspaces">0</span><span class="unit">times</span></span></li>
     </ul>
     <div class="r-foot">
       <button class="btn btn-secondary" id="resBackSetupBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">⚙ Change Test</button>
@@ -358,6 +359,7 @@
             <span class="leg leg-ok"><span class="dot"></span> Correct</span>
             <span class="leg leg-half"><span class="dot"></span> Half Mistake (0.5)</span>
             <span class="leg leg-full"><span class="dot"></span> Full Mistake (1.0)</span>
+            <span class="leg leg-omission"><span class="dot"></span> Omission (छूटा हुआ)</span>
             <span class="leg leg-skip"><span class="dot"></span> Unattempted</span>
           </div>
         </div>
@@ -397,6 +399,7 @@
             <button data-filter="mistakes" class="active">All Mistakes (<span id="cntMistakes">0</span>)</button>
             <button data-filter="full">Full (<span id="cntFull">0</span>)</button>
             <button data-filter="half">Half (<span id="cntHalf">0</span>)</button>
+            <button data-filter="omission">Omissions (<span id="cntOmission">0</span>)</button>
             <button data-filter="all">All Words (<span id="cntAll">0</span>)</button>
           </div>
         </div>

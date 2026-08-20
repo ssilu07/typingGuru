@@ -364,10 +364,157 @@ function elapsedMin() {
   return Math.min(Math.max(m, 1 / 60), durationSec / 60);
 }
 
-/* ── Word Comparison & Error Classification ── */
+/* ── Word Comparison & Error Classification (UP Police Official LCS/Diff Alignment) ── */
 const PUNCT_REGEX = /[\.,!?:;\"'()\-—–/\\“”‘’।]/g;
 function stripPunct(s) {
   return (s || "").replace(PUNCT_REGEX, "");
+}
+
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  const la = a.length, lb = b.length;
+  if (la === 0) return lb;
+  if (lb === 0) return la;
+  let prev = new Array(lb + 1);
+  for (let j = 0; j <= lb; j++) prev[j] = j;
+  for (let i = 1; i <= la; i++) {
+    const curr = new Array(lb + 1);
+    curr[0] = i;
+    const ca = a.charCodeAt(i - 1);
+    for (let j = 1; j <= lb; j++) {
+      const cost = (ca === b.charCodeAt(j - 1)) ? 0 : 1;
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+    }
+    prev = curr;
+  }
+  return prev[lb];
+}
+
+function wordSimilarity(a, b) {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const maxLen = Math.max(a.length, b.length);
+  if (maxLen === 0) return 1;
+  const dist = levenshtein(a, b);
+  return Math.max(0, 1 - (dist / maxLen));
+}
+
+function matchScore(target, typed) {
+  if (target === typed) return 12;
+  const strippedT = stripPunct(target);
+  const strippedU = stripPunct(typed);
+  if (strippedT === strippedU && strippedT.length > 0) return 9;
+  if (lang === "english") {
+    if (target.toLowerCase() === typed.toLowerCase()) return 8;
+    if (strippedT.toLowerCase() === strippedU.toLowerCase() && strippedT.length > 0) return 7;
+  }
+  const sim = wordSimilarity(target, typed);
+  if (sim >= 0.5) {
+    return 3 + 6 * sim;
+  }
+  return -2;
+}
+
+function getTypedTokens(val, isFinished) {
+  if (!val) return [];
+  const hasTrailingSpace = /\s$/.test(val);
+  const words = val.trim().split(/\s+/).filter(w => w.length > 0);
+  if (words.length === 0) return [];
+  
+  return words.map((text, idx) => ({
+    text,
+    isCurrent: !isFinished && !hasTrailingSpace && (idx === words.length - 1)
+  }));
+}
+
+function alignWords(targets, typeds) {
+  const N = targets.length;
+  const M = typeds.length;
+  const GAP_TARGET = -3;
+  const GAP_TYPED = -3;
+
+  const dp = [];
+  const choice = [];
+
+  for (let i = 0; i <= N; i++) {
+    dp[i] = new Float32Array(M + 1);
+    choice[i] = new Uint8Array(M + 1);
+  }
+
+  dp[0][0] = 0;
+  for (let i = 1; i <= N; i++) {
+    dp[i][0] = dp[i - 1][0] + GAP_TARGET;
+    choice[i][0] = 1;
+  }
+  for (let j = 1; j <= M; j++) {
+    dp[0][j] = dp[0][j - 1] + GAP_TYPED;
+    choice[0][j] = 2;
+  }
+
+  for (let i = 1; i <= N; i++) {
+    const tWord = targets[i - 1];
+    for (let j = 1; j <= M; j++) {
+      const uWord = typeds[j - 1].text;
+      const scoreDiag = dp[i - 1][j - 1] + matchScore(tWord, uWord);
+      const scoreUp = dp[i - 1][j] + GAP_TARGET;
+      const scoreLeft = dp[i][j - 1] + GAP_TYPED;
+
+      let bestScore = scoreDiag;
+      let bestChoice = 0;
+
+      if (scoreUp > bestScore) {
+        bestScore = scoreUp;
+        bestChoice = 1;
+      }
+      if (scoreLeft > bestScore) {
+        bestScore = scoreLeft;
+        bestChoice = 2;
+      }
+
+      dp[i][j] = bestScore;
+      choice[i][j] = bestChoice;
+    }
+  }
+
+  // Backtrack
+  const aligned = [];
+  let i = N, j = M;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && choice[i][j] === 0) {
+      aligned.push({
+        targetIdx: i - 1,
+        target: targets[i - 1],
+        typedIdx: j - 1,
+        typed: typeds[j - 1].text,
+        isCurrent: typeds[j - 1].isCurrent,
+        type: "pair"
+      });
+      i--; j--;
+    } else if (i > 0 && (j === 0 || choice[i][j] === 1)) {
+      aligned.push({
+        targetIdx: i - 1,
+        target: targets[i - 1],
+        typedIdx: null,
+        typed: null,
+        isCurrent: false,
+        type: "omission"
+      });
+      i--;
+    } else {
+      aligned.push({
+        targetIdx: null,
+        target: null,
+        typedIdx: j - 1,
+        typed: typeds[j - 1].text,
+        isCurrent: typeds[j - 1].isCurrent,
+        type: "addition"
+      });
+      j--;
+    }
+  }
+
+  aligned.reverse();
+  return aligned;
 }
 
 let lastTestStats = null;
@@ -380,201 +527,250 @@ function compare() {
     if (w.spaceSpan) w.spaceSpan.classList.remove("ok", "bad", "half-bad", "cur");
   });
 
-  let typedWords = inputEl.value.split(" ");
-  if (finished) {
-    while (typedWords.length && typedWords[typedWords.length - 1] === "") typedWords.pop();
-  }
-  const lastIdx = typedWords.length - 1;
+  const typeds = getTypedTokens(inputEl.value, finished);
   const targetWords = wordsData.map(w => w.text);
 
-  let okWords = 0;
-  let fullMistakes = 0;
-  let halfMistakes = 0;
-  let attempted = 0;
-
-  // Pre-identify Transposition and Spacing Errors
-  const transposed = new Set();
-  const spacingErrors = new Set();
-
-  for (let wi = 0; wi < typedWords.length && wi < wordsData.length; wi++) {
-    const isCurrent = (wi === lastIdx) && !finished;
-    if (isCurrent) continue;
-
-    // Transposition: 2 adjacent words swapped
-    if (wi < typedWords.length - 1 && wi < targetWords.length - 1 && !transposed.has(wi)) {
-      if (typedWords[wi] === targetWords[wi + 1] && typedWords[wi + 1] === targetWords[wi] && typedWords[wi] !== targetWords[wi]) {
-        transposed.add(wi);
-        transposed.add(wi + 1);
-      }
+  if (typeds.length === 0) {
+    if (wordsData[0] && hlMode !== "off") {
+      wordsData[0].el.classList.add("active");
+      wordsData[0].spans[0].classList.add("cur");
     }
-
-    // Spacing merged: typed word combines current and next target word
-    if (wi < targetWords.length - 1 && typedWords[wi] === targetWords[wi] + targetWords[wi + 1]) {
-      spacingErrors.add(wi);
-    }
-    // Spacing split: current typed word + next typed word equals current target word
-    if (wi < typedWords.length - 1 && typedWords[wi] + typedWords[wi + 1] === targetWords[wi]) {
-      spacingErrors.add(wi);
-    }
-  }
-
-  const reviewItems = [];
-
-  for (let wi = 0; wi < typedWords.length && wi < wordsData.length; wi++) {
-    const tw = graphemes(typedWords[wi]);
-    const W = wordsData[wi];
-    const isCurrent = (wi === lastIdx) && !finished;
-    const typedWord = typedWords[wi];
-    const targetWord = W.text;
-
-    let mistakeType = null; // null (clean match), "half", "full"
-    let category = "Correct / शुद्ध";
-    let reason = "सही शब्द (Word matches perfectly)";
-
-    if (typedWord === targetWord) {
-      mistakeType = null;
-      category = "Correct / शुद्ध";
-      reason = "सही शब्द (Word matches target)";
-    } else if (transposed.has(wi)) {
-      mistakeType = "half";
-      category = "Transposition / शब्दों का उलट-पलट";
-      reason = `शब्दों का क्रम बदल गया (Transposed with adjacent word)`;
-    } else if (spacingErrors.has(wi)) {
-      mistakeType = "half";
-      category = "Spacing Error / स्पेस की गलती";
-      reason = "स्पेस छूट गया या अतिरिक्त स्पेस लग गया (Merged or split words)";
-    } else {
-      const strippedTyped = stripPunct(typedWord);
-      const strippedTarget = stripPunct(targetWord);
-
-      // Punctuation error (Hindi or English)
-      if (strippedTyped === strippedTarget && strippedTyped.length > 0) {
-        mistakeType = "half";
-        category = "Punctuation / विराम चिह्न";
-        reason = `विराम चिह्न छूटा या गलत लगा (Punctuation difference: expected "${targetWord}")`;
-      } else if (lang === "english") {
-        // Wrong Capitalisation (English only)
-        if (typedWord.toLowerCase() === targetWord.toLowerCase()) {
-          mistakeType = "half";
-          category = "Capitalisation / छोटा-बड़ा अक्षर";
-          reason = `कैपिटल/स्मॉल अक्षर की अशुद्धि (Case mismatch: expected "${targetWord}")`;
-        } else if (strippedTyped.toLowerCase() === strippedTarget.toLowerCase() && strippedTyped.length > 0) {
-          mistakeType = "half";
-          category = "Punctuation & Case";
-          reason = `विराम चिह्न व केस दोनों में अशुद्धि (Case & punctuation mismatch: expected "${targetWord}")`;
-        } else {
-          mistakeType = "full";
-          category = "Spelling / गलत शब्द";
-          reason = `हिज्जे या शब्द गलत है (Spelling error / wrong word: expected "${targetWord}")`;
-        }
-      } else {
-        mistakeType = "full";
-        category = "Spelling / गलत शब्द";
-        reason = `मात्रा, वर्ण या शब्द गलत है (Spelling error: expected "${targetWord}")`;
-      }
-    }
-
-    // Color character spans
-    if (hlMode !== "off") {
-      for (let i = 0; i < W.g.length; i++) {
-        const s = W.spans[i];
-        if (i < tw.length) {
-          if (tw[i] === W.g[i]) {
-            s.classList.add("ok");
-          } else if (mistakeType === "half") {
-            s.classList.add("half-bad");
-          } else {
-            s.classList.add("bad");
-          }
-        } else if (!isCurrent) {
-          s.classList.add(mistakeType === "half" ? "half-bad" : "bad");
-        }
-      }
-    }
-
-    if (!isCurrent) {
-      attempted++;
-      if (mistakeType === null) {
-        okWords++;
-        if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("ok");
-      } else if (mistakeType === "half") {
-        halfMistakes++;
-        if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("half-bad");
-      } else {
-        fullMistakes++;
-        if (W.spaceSpan && hlMode !== "off") W.spaceSpan.classList.add("bad");
-      }
-
-      reviewItems.push({
-        index: wi + 1,
-        targetWord,
-        typedWord,
-        status: mistakeType === null ? "ok" : mistakeType,
-        category,
-        reason,
-        penalty: mistakeType === null ? 0 : (mistakeType === "half" ? 0.5 : 1.0)
-      });
-    }
-
-    if (isCurrent) {
-      if (hlMode !== "off") {
-        W.el.classList.add("active");
-      }
-      let curSpan = null;
-      if (tw.length < W.g.length) curSpan = W.spans[tw.length];
-      else if (W.spaceSpan) curSpan = W.spaceSpan;
-      if (curSpan) {
-        if (hlMode !== "off") {
-          curSpan.classList.add("cur");
-        }
-        curSpan.scrollIntoView({block: "nearest"});
-      }
-    }
-  }
-
-  // Extra words typed beyond passage length count as Full Mistakes (Addition)
-  for (let wi = wordsData.length; wi < typedWords.length; wi++) {
-    attempted++;
-    fullMistakes++;
-    reviewItems.push({
-      index: wi + 1,
-      targetWord: "— (गद्यांश समाप्त)",
-      typedWord: typedWords[wi],
-      status: "full",
-      category: "Extra Word / अतिरिक्त शब्द",
-      reason: "गद्यांश की सीमा से बाहर अतिरिक्त शब्द टाइप किया गया (Extra word beyond passage).",
-      penalty: 1.0
-    });
-  }
-
-  // Unattempted words
-  const unattemptedItems = [];
-  if (finished) {
-    for (let wi = typedWords.length; wi < wordsData.length; wi++) {
-      unattemptedItems.push({
-        index: wi + 1,
-        targetWord: wordsData[wi].text,
+    return {
+      okWords: 0,
+      fullMistakes: 0,
+      halfMistakes: 0,
+      omissionsCount: 0,
+      totalMistakes: 0,
+      pureWords: 0,
+      attempted: 0,
+      reviewItems: [],
+      unattemptedItems: wordsData.map((w, idx) => ({
+        index: idx + 1,
+        targetWord: w.text,
         typedWord: "—",
         status: "skip",
         category: "Unattempted / छूटा हुआ शब्द",
         reason: "समय समाप्त होने के कारण यह शब्द टाइप नहीं हो पाया (Not attempted within time).",
         penalty: 0
-      });
+      })),
+      reachedEnd: false
+    };
+  }
+
+  const aligned = alignWords(targetWords, typeds);
+
+  // Find the last attempted target index
+  let lastAttemptedTargetIdx = -1;
+  aligned.forEach(item => {
+    if (item.type === "pair" && item.targetIdx !== null) {
+      if (item.targetIdx > lastAttemptedTargetIdx) lastAttemptedTargetIdx = item.targetIdx;
+    }
+  });
+
+  // Pre-detect transpositions in pairs
+  const transposedIndices = new Set();
+  for (let k = 0; k < aligned.length - 1; k++) {
+    const a1 = aligned[k], a2 = aligned[k + 1];
+    if (a1.type === "pair" && a2.type === "pair" && !a1.isCurrent && !a2.isCurrent) {
+      if (a1.typed === a2.target && a2.typed === a1.target && a1.target !== a2.target) {
+        transposedIndices.add(k);
+        transposedIndices.add(k + 1);
+      }
+    }
+  }
+
+  let okWords = 0;
+  let fullMistakes = 0;
+  let halfMistakes = 0;
+  let omissionsCount = 0;
+  let attempted = 0;
+  let currentActiveTargetIdx = null;
+
+  const reviewItems = [];
+  const unattemptedItems = [];
+
+  aligned.forEach((item, k) => {
+    if (item.type === "pair") {
+      const W = wordsData[item.targetIdx];
+      const targetWord = item.target;
+      const typedWord = item.typed;
+      const isCurrent = item.isCurrent;
+
+      let mistakeType = null; // null (clean match), "half", "full"
+      let category = "Correct / शुद्ध";
+      let reason = "सही शब्द (Word matches target)";
+
+      if (typedWord === targetWord) {
+        mistakeType = null;
+        category = "Correct / शुद्ध";
+        reason = "सही शब्द (Word matches target)";
+      } else if (transposedIndices.has(k)) {
+        mistakeType = "half";
+        category = "Transposition / शब्दों का उलट-पलट";
+        reason = "शब्दों का क्रम बदल गया (Transposed with adjacent word)";
+      } else {
+        const strippedTyped = stripPunct(typedWord);
+        const strippedTarget = stripPunct(targetWord);
+
+        if (strippedTyped === strippedTarget && strippedTyped.length > 0) {
+          mistakeType = "half";
+          category = "Punctuation / विराम चिह्न";
+          reason = `विराम चिह्न छूटा या गलत लगा (Punctuation mismatch: expected "${targetWord}")`;
+        } else if (lang === "english") {
+          if (typedWord.toLowerCase() === targetWord.toLowerCase()) {
+            mistakeType = "half";
+            category = "Capitalisation / छोटा-बड़ा अक्षर";
+            reason = `कैपिटल/स्मॉल अक्षर की अशुद्धि (Case mismatch: expected "${targetWord}")`;
+          } else if (strippedTyped.toLowerCase() === strippedTarget.toLowerCase() && strippedTyped.length > 0) {
+            mistakeType = "half";
+            category = "Punctuation & Case";
+            reason = `विराम चिह्न व केस दोनों में अशुद्धि (Case & punctuation mismatch: expected "${targetWord}")`;
+          } else {
+            mistakeType = "full";
+            category = "Spelling / गलत शब्द";
+            reason = `हिज्जे या शब्द गलत है (Spelling error / wrong word: expected "${targetWord}")`;
+          }
+        } else {
+          mistakeType = "full";
+          category = "Spelling / गलत शब्द";
+          reason = `मात्रा, वर्ण या शब्द गलत है (Spelling error: expected "${targetWord}")`;
+        }
+      }
+
+      // Coloring in live passage
+      if (hlMode !== "off") {
+        if (isCurrent) {
+          currentActiveTargetIdx = item.targetIdx;
+          W.el.classList.add("active");
+          const tw = graphemes(typedWord);
+          for (let gi = 0; gi < W.g.length; gi++) {
+            const s = W.spans[gi];
+            if (gi < tw.length) {
+              if (tw[gi] === W.g[gi]) s.classList.add("ok");
+              else s.classList.add("bad");
+            }
+          }
+          let curSpan = null;
+          if (tw.length < W.g.length) curSpan = W.spans[tw.length];
+          else if (W.spaceSpan) curSpan = W.spaceSpan;
+          if (curSpan) {
+            curSpan.classList.add("cur");
+            curSpan.scrollIntoView({block: "nearest"});
+          }
+        } else {
+          const cls = mistakeType === null ? "ok" : (mistakeType === "half" ? "half-bad" : "bad");
+          W.spans.forEach(s => s.classList.add(cls));
+          if (W.spaceSpan) W.spaceSpan.classList.add(cls);
+        }
+      }
+
+      if (!isCurrent) {
+        attempted++;
+        if (mistakeType === null) {
+          okWords++;
+        } else if (mistakeType === "half") {
+          halfMistakes++;
+        } else {
+          fullMistakes++;
+        }
+
+        reviewItems.push({
+          index: item.targetIdx + 1,
+          targetWord,
+          typedWord,
+          status: mistakeType === null ? "ok" : mistakeType,
+          category,
+          reason,
+          penalty: mistakeType === null ? 0 : (mistakeType === "half" ? 0.5 : 1.0)
+        });
+      }
+
+    } else if (item.type === "omission") {
+      const W = wordsData[item.targetIdx];
+      const isMiddleOmission = (item.targetIdx <= lastAttemptedTargetIdx);
+
+      if (isMiddleOmission) {
+        // User typed beyond this word -> Full Mistake (Omission)
+        attempted++;
+        fullMistakes++;
+        omissionsCount++;
+
+        if (hlMode !== "off") {
+          W.spans.forEach(s => s.classList.add("bad"));
+          if (W.spaceSpan) W.spaceSpan.classList.add("bad");
+        }
+
+        reviewItems.push({
+          index: item.targetIdx + 1,
+          targetWord: item.target,
+          typedWord: "— (छूटा हुआ)",
+          status: "omission",
+          category: "Omission / छूटा हुआ शब्द",
+          reason: `गद्यांश का यह शब्द टाइप करने से छूट गया (Word omitted from passage: expected "${item.target}")`,
+          penalty: 1.0
+        });
+      } else {
+        // Unattempted word at the end
+        if (finished) {
+          unattemptedItems.push({
+            index: item.targetIdx + 1,
+            targetWord: item.target,
+            typedWord: "—",
+            status: "skip",
+            category: "Unattempted / छूटा हुआ शब्द",
+            reason: "समय समाप्त होने के कारण यह शब्द टाइप नहीं हो पाया (Not attempted within time).",
+            penalty: 0
+          });
+        }
+      }
+
+    } else if (item.type === "addition") {
+      // Extra word typed
+      if (!item.isCurrent) {
+        attempted++;
+        fullMistakes++;
+
+        reviewItems.push({
+          index: (lastAttemptedTargetIdx >= 0 ? lastAttemptedTargetIdx + 1 : 1),
+          targetWord: "— (अतिरिक्त शब्द)",
+          typedWord: item.typed,
+          status: "full",
+          category: "Addition / अतिरिक्त शब्द",
+          reason: `गद्यांश में न होने वाला अतिरिक्त शब्द टाइप किया गया (Extra word typed: "${item.typed}")`,
+          penalty: 1.0
+        });
+      }
+    }
+  });
+
+  // If live typing and no token is currently in-progress, set cursor on next unattempted word
+  if (!finished && currentActiveTargetIdx === null && hlMode !== "off") {
+    const nextIdx = lastAttemptedTargetIdx + 1;
+    if (nextIdx < wordsData.length) {
+      const nextW = wordsData[nextIdx];
+      nextW.el.classList.add("active");
+      if (nextW.spans[0]) {
+        nextW.spans[0].classList.add("cur");
+        nextW.spans[0].scrollIntoView({block: "nearest"});
+      }
     }
   }
 
   const totalMistakes = fullMistakes + (halfMistakes * 0.5);
   const pureWords = Math.max(0, attempted - totalMistakes);
+  const reachedEnd = (lastAttemptedTargetIdx >= wordsData.length - 1);
 
   return {
     okWords,
     fullMistakes,
     halfMistakes,
+    omissionsCount,
     totalMistakes,
     pureWords,
     attempted,
     reviewItems,
-    unattemptedItems
+    unattemptedItems,
+    reachedEnd
   };
 }
 
@@ -584,14 +780,15 @@ function updateStats() {
   const min = elapsedMin();
   const keystrokes = Array.from(inputEl.value).length;
   const totalPassageWords = wordsData.length;
-  const speed = min > 0 ? (s.attempted / min) : 0;
-  const acc = totalPassageWords > 0 ? ((s.pureWords * 100) / totalPassageWords) : 0;
+  const grossSpeed = min > 0 ? (s.attempted / min) : 0;
+  const netSpeed = min > 0 ? (s.pureWords / min) : 0;
+  const acc = s.attempted > 0 ? ((s.pureWords * 100) / s.attempted) : 0;
 
-  wpmV.textContent = started ? speed.toFixed(1) : "0";
-  accV.textContent = acc.toFixed(1) + "%";
+  wpmV.textContent = started ? netSpeed.toFixed(1) : "0";
+  accV.textContent = started ? (acc.toFixed(1) + "%") : "0%";
   errV.textContent = started ? `${s.fullMistakes} / ${s.halfMistakes}` : "0 / 0";
 
-  return {...s, min, speed, acc, totalPassageWords, keystrokes};
+  return {...s, min, grossSpeed, netSpeed, speed: netSpeed, acc, totalPassageWords, keystrokes};
 }
 
 /* ── Finish & Reset ── */
@@ -605,7 +802,7 @@ function finish() {
 
   const name = el("nameIn").value.trim();
   el("rName").textContent = name || "—";
-  el("rWpm").textContent = s.speed.toFixed(2);
+  el("rWpm").textContent = s.netSpeed.toFixed(2);
   if (el("rPassageTotal")) el("rPassageTotal").textContent = s.totalPassageWords;
   el("rTotal").textContent = s.attempted;
   if (el("rPure")) el("rPure").textContent = (Number.isInteger(s.pureWords) ? s.pureWords : s.pureWords.toFixed(1));
@@ -615,8 +812,31 @@ function finish() {
   el("rKeys").textContent = s.keystrokes;
   el("rBackspaces").textContent = backspaceCount;
   el("rAcc").textContent = s.acc.toFixed(2);
-  el("rGross").textContent = s.speed.toFixed(2);
+  el("rGross").textContent = s.grossSpeed.toFixed(2);
   el("rTime").textContent = s.min.toFixed(2);
+
+  // UP Police Qualifying Evaluation
+  const reqSpeed = (lang === "hindi") ? 25.0 : 30.0;
+  const reqAcc = 85.0;
+  const isQualified = (s.netSpeed >= reqSpeed && s.acc >= reqAcc);
+  const qualBadge = el("rQualBadge");
+  const rTrophy = el("rTrophy");
+
+  if (qualBadge) {
+    if (isQualified) {
+      qualBadge.className = "r-qual-badge qual-pass";
+      qualBadge.innerHTML = `✓ QUALIFIED (उत्तीर्ण) — ${s.netSpeed.toFixed(2)} WPM / ${s.acc.toFixed(1)}% Acc`;
+      if (rTrophy) rTrophy.textContent = "🏆";
+    } else {
+      qualBadge.className = "r-qual-badge qual-fail";
+      let failReasons = [];
+      if (s.netSpeed < reqSpeed) failReasons.push(`Speed < ${reqSpeed} WPM (कट-ऑफ ${reqSpeed})`);
+      if (s.acc < reqAcc) failReasons.push(`Accuracy < ${reqAcc}% (कट-ऑफ 85%)`);
+      qualBadge.innerHTML = `✗ NOT QUALIFIED (अनुत्तीर्ण) — ${failReasons.join(", ")}`;
+      if (rTrophy) rTrophy.textContent = "⚠️";
+    }
+  }
+
   overlay.classList.add("show");
 }
 
@@ -662,6 +882,7 @@ function showWordDetail(item) {
   badge.className = `rd-badge badge-${item.status}`;
   badge.textContent = item.status === "ok" ? "Correct (शुद्ध)"
     : item.status === "half" ? "Half Mistake (0.5)"
+    : item.status === "omission" ? "Omission (छूटा हुआ - 1.0)"
     : item.status === "full" ? "Full Mistake (1.0)"
     : "Unattempted (छूटा हुआ)";
 
@@ -682,7 +903,7 @@ function renderReviewPassage(stats) {
   allItems.forEach((item, i) => {
     const span = document.createElement("span");
     span.className = `rev-word w-${item.status}`;
-    span.textContent = (item.status === "full" && item.targetWord.startsWith("—")) ? item.typedWord : item.targetWord;
+    span.textContent = (item.status === "full" && item.targetWord && item.targetWord.startsWith("—")) ? item.typedWord : item.targetWord;
     span.dataset.idx = i;
     
     span.addEventListener("click", () => {
@@ -695,7 +916,7 @@ function renderReviewPassage(stats) {
     revPassageEl.appendChild(document.createTextNode(" "));
   });
 
-  const firstMistake = allItems.find(it => it.status === "full" || it.status === "half") || allItems[0];
+  const firstMistake = allItems.find(it => it.status === "full" || it.status === "half" || it.status === "omission") || allItems[0];
   if (firstMistake) {
     const idx = allItems.indexOf(firstMistake);
     const span = revPassageEl.querySelector(`[data-idx="${idx}"]`);
@@ -716,19 +937,22 @@ function renderReviewTable(stats, filter) {
   let filtered = [];
 
   if (filter === "mistakes") {
-    filtered = stats.reviewItems.filter(it => it.status === "full" || it.status === "half");
+    filtered = stats.reviewItems.filter(it => it.status === "full" || it.status === "half" || it.status === "omission");
   } else if (filter === "full") {
     filtered = stats.reviewItems.filter(it => it.status === "full");
   } else if (filter === "half") {
     filtered = stats.reviewItems.filter(it => it.status === "half");
+  } else if (filter === "omission") {
+    filtered = stats.reviewItems.filter(it => it.status === "omission");
   } else {
     filtered = allItems;
   }
 
   const mistakesCount = stats.fullMistakes + stats.halfMistakes;
   el("cntMistakes").textContent = mistakesCount;
-  el("cntFull").textContent = stats.fullMistakes;
+  el("cntFull").textContent = stats.fullMistakes - (stats.omissionsCount || 0);
   el("cntHalf").textContent = stats.halfMistakes;
+  if (el("cntOmission")) el("cntOmission").textContent = (stats.omissionsCount || 0);
   el("cntAll").textContent = allItems.length;
 
   if (filtered.length === 0) {
@@ -742,6 +966,7 @@ function renderReviewTable(stats, filter) {
     const badgeClass = item.status;
     const badgeText = item.status === "ok" ? "Correct"
       : item.status === "half" ? "Half (0.5)"
+      : item.status === "omission" ? "Omission (1.0)"
       : item.status === "full" ? "Full (1.0)"
       : "Skip";
 
@@ -786,7 +1011,7 @@ function openReviewModal() {
   el("revHalf").textContent = lastTestStats.halfMistakes;
   el("revTotalErr").textContent = Number.isInteger(lastTestStats.totalMistakes) ? lastTestStats.totalMistakes : lastTestStats.totalMistakes.toFixed(1);
   el("revAcc").textContent = lastTestStats.acc.toFixed(2) + "%";
-  el("revSpeed").textContent = lastTestStats.speed.toFixed(2) + " WPM";
+  el("revSpeed").textContent = lastTestStats.netSpeed.toFixed(2) + " WPM";
 
   renderReviewPassage(lastTestStats);
   renderReviewTable(lastTestStats, "mistakes");
@@ -831,11 +1056,11 @@ inputEl.addEventListener("input", () => {
   if (lang === "hindi" && /[A-Za-z]/.test(inputEl.value)) engWarn.classList.add("show");
   else if (lang === "english" && /[\u0900-\u097F]/.test(inputEl.value)) engWarn.classList.add("show");
   else engWarn.classList.remove("show");
-  updateStats();
-  const tws = inputEl.value.split(" ");
+  const s = updateStats();
+  const tws = getTypedTokens(inputEl.value, false);
   const lastW = wordsData[wordsData.length - 1];
   if (tws.length > wordsData.length ||
-     (tws.length === wordsData.length && graphemes(tws[tws.length - 1]).length >= lastW.g.length)) {
+     (tws.length === wordsData.length && !tws[tws.length - 1].isCurrent && graphemes(tws[tws.length - 1].text).length >= lastW.g.length)) {
     finish();
   }
 });

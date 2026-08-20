@@ -905,6 +905,27 @@ body.lang-hindi .exam-typing-box textarea {
   line-height: 1.1;
 }
 .r-wpm-label { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+.r-qual-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.r-qual-badge.qual-pass {
+  background: rgba(16,185,129,0.18);
+  border: 1px solid var(--ok);
+  color: var(--ok);
+}
+.r-qual-badge.qual-fail {
+  background: rgba(239,68,68,0.18);
+  border: 1px solid var(--bad);
+  color: var(--bad);
+}
 
 .r-rows {
   list-style: none;
@@ -1023,6 +1044,7 @@ body.lang-hindi .exam-typing-box textarea {
 .leg-ok .dot   { background: var(--ok); }
 .leg-half .dot { background: #fbbf24; }
 .leg-full .dot { background: var(--bad); }
+.leg-omission .dot { background: #f87171; border: 1px dashed #ffffff; }
 .leg-skip .dot { background: var(--text-3); }
 
 .rev-passage-box {
@@ -1049,6 +1071,7 @@ body.lang-hindi .exam-typing-box textarea {
 .rev-word.w-ok   { background: rgba(52,211,153,0.15); color: var(--ok); }
 .rev-word.w-half { background: rgba(251,191,36,0.2); color: #fbbf24; font-weight: 600; }
 .rev-word.w-full { background: rgba(248,113,113,0.2); color: var(--bad); font-weight: 600; }
+.rev-word.w-omission { background: rgba(239,68,68,0.25); color: #f87171; text-decoration: line-through; font-weight: 600; }
 .rev-word.w-skip { color: var(--text-3); }
 .rev-word.w-selected { outline: 2px solid var(--accent); }
 
@@ -1074,6 +1097,7 @@ body.lang-hindi .exam-typing-box textarea {
 .rd-badge.badge-ok   { background: rgba(52,211,153,0.2); color: var(--ok); }
 .rd-badge.badge-half { background: rgba(251,191,36,0.25); color: #fbbf24; }
 .rd-badge.badge-full { background: rgba(248,113,113,0.25); color: var(--bad); }
+.rd-badge.badge-omission { background: rgba(239,68,68,0.25); color: #f87171; }
 .rd-badge.badge-skip { background: rgba(255,255,255,0.1); color: var(--text-3); }
 
 .rd-grid {
@@ -1125,6 +1149,7 @@ body.lang-hindi .exam-typing-box textarea {
 .tb-badge.ok   { background: rgba(52,211,153,0.15); color: var(--ok); }
 .tb-badge.half { background: rgba(251,191,36,0.2); color: #fbbf24; }
 .tb-badge.full { background: rgba(248,113,113,0.2); color: var(--bad); }
+.tb-badge.omission { background: rgba(239,68,68,0.25); color: #f87171; }
 .rev-empty {
   padding: 24px;
   text-align: center;
