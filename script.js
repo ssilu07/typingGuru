@@ -782,7 +782,12 @@ function updateStats() {
   const totalPassageWords = wordsData.length;
   const grossSpeed = min > 0 ? (s.attempted / min) : 0;
   const netSpeed = min > 0 ? (s.pureWords / min) : 0;
-  const acc = s.attempted > 0 ? ((s.pureWords * 100) / s.attempted) : 0;
+
+  // 15-min Exam Mode uses total passage words (Official Exam Rule) upon finish
+  // 1, 2, 5, 10 min Practice Modes use total attempted words
+  const is15MinExam = (durationSec >= 15 * 60);
+  const accBase = (is15MinExam && finished) ? totalPassageWords : s.attempted;
+  const acc = (accBase > 0) ? ((s.pureWords * 100) / accBase) : 0;
 
   wpmV.textContent = started ? netSpeed.toFixed(1) : "0";
   accV.textContent = started ? (acc.toFixed(1) + "%") : "0%";
