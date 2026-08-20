@@ -427,22 +427,26 @@ function getTypedTokens(val, isFinished) {
   }));
 }
 
-function alignWords(targets, typeds) {
+function alignWordsPrefix(targets, typeds) {
   const N = targets.length;
   const M = typeds.length;
-  const GAP_TARGET = -3;
-  const GAP_TYPED = -3;
+  if (M === 0) return { aligned: [], unattempted: [], bestI: 0 };
+
+  const GAP_TARGET = -4; // Omission penalty
+  const GAP_TYPED = -4;  // Addition penalty
+  const MAX_FORWARD_LOOKAHEAD = 12; // Maximum words to skip ahead in target
+  const maxN = Math.min(N, M + MAX_FORWARD_LOOKAHEAD + 5);
 
   const dp = [];
-  const choice = [];
+  const choice = []; // 0: diag (pair), 1: up (omission), 2: left (addition)
 
-  for (let i = 0; i <= N; i++) {
-    dp[i] = new Float32Array(M + 1);
+  for (let i = 0; i <= maxN; i++) {
+    dp[i] = new Float32Array(M + 1).fill(-Infinity);
     choice[i] = new Uint8Array(M + 1);
   }
 
   dp[0][0] = 0;
-  for (let i = 1; i <= N; i++) {
+  for (let i = 1; i <= Math.min(maxN, MAX_FORWARD_LOOKAHEAD); i++) {
     dp[i][0] = dp[i - 1][0] + GAP_TARGET;
     choice[i][0] = 1;
   }
@@ -451,10 +455,13 @@ function alignWords(targets, typeds) {
     choice[0][j] = 2;
   }
 
-  for (let i = 1; i <= N; i++) {
-    const tWord = targets[i - 1];
-    for (let j = 1; j <= M; j++) {
-      const uWord = typeds[j - 1].text;
+  for (let j = 1; j <= M; j++) {
+    const uWord = typeds[j - 1].text;
+    const minI = Math.max(1, j - 5);
+    const maxI = Math.min(maxN, j + MAX_FORWARD_LOOKAHEAD);
+
+    for (let i = minI; i <= maxI; i++) {
+      const tWord = targets[i - 1];
       const scoreDiag = dp[i - 1][j - 1] + matchScore(tWord, uWord);
       const scoreUp = dp[i - 1][j] + GAP_TARGET;
       const scoreLeft = dp[i][j - 1] + GAP_TYPED;
@@ -476,11 +483,24 @@ function alignWords(targets, typeds) {
     }
   }
 
-  // Backtrack
+  // Find best ending target index i at j = M
+  let bestI = M;
+  let bestScore = -Infinity;
+  const startCheck = Math.max(1, M - 5);
+  const endCheck = Math.min(maxN, M + MAX_FORWARD_LOOKAHEAD);
+  for (let i = startCheck; i <= endCheck; i++) {
+    if (dp[i][M] > bestScore) {
+      bestScore = dp[i][M];
+      bestI = i;
+    }
+  }
+
+  // Backtrack from (bestI, M)
   const aligned = [];
-  let i = N, j = M;
+  let i = bestI, j = M;
   while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && choice[i][j] === 0) {
+    const c = (i >= 0 && j >= 0) ? choice[i][j] : (i > 0 ? 1 : 2);
+    if (i > 0 && j > 0 && c === 0) {
       aligned.push({
         targetIdx: i - 1,
         target: targets[i - 1],
@@ -490,7 +510,7 @@ function alignWords(targets, typeds) {
         type: "pair"
       });
       i--; j--;
-    } else if (i > 0 && (j === 0 || choice[i][j] === 1)) {
+    } else if (i > 0 && (j === 0 || c === 1)) {
       aligned.push({
         targetIdx: i - 1,
         target: targets[i - 1],
@@ -512,9 +532,22 @@ function alignWords(targets, typeds) {
       j--;
     }
   }
-
   aligned.reverse();
-  return aligned;
+
+  // All remaining words from bestI to N-1 are unattempted
+  const unattempted = [];
+  for (let k = bestI; k < N; k++) {
+    unattempted.push({
+      targetIdx: k,
+      target: targets[k],
+      typedIdx: null,
+      typed: "—",
+      status: "skip",
+      type: "unattempted"
+    });
+  }
+
+  return { aligned, unattempted, bestI };
 }
 
 let lastTestStats = null;
@@ -557,15 +590,7 @@ function compare() {
     };
   }
 
-  const aligned = alignWords(targetWords, typeds);
-
-  // Find the last attempted target index
-  let lastAttemptedTargetIdx = -1;
-  aligned.forEach(item => {
-    if (item.type === "pair" && item.targetIdx !== null) {
-      if (item.targetIdx > lastAttemptedTargetIdx) lastAttemptedTargetIdx = item.targetIdx;
-    }
-  });
+  const { aligned, unattempted, bestI } = alignWordsPrefix(targetWords, typeds);
 
   // Pre-detect transpositions in pairs
   const transposedIndices = new Set();
@@ -587,7 +612,6 @@ function compare() {
   let currentActiveTargetIdx = null;
 
   const reviewItems = [];
-  const unattemptedItems = [];
 
   aligned.forEach((item, k) => {
     if (item.type === "pair") {
@@ -687,42 +711,25 @@ function compare() {
 
     } else if (item.type === "omission") {
       const W = wordsData[item.targetIdx];
-      const isMiddleOmission = (item.targetIdx <= lastAttemptedTargetIdx);
+      // Since item is in aligned (before bestI), this is an omission in the middle of typed text!
+      attempted++;
+      fullMistakes++;
+      omissionsCount++;
 
-      if (isMiddleOmission) {
-        // User typed beyond this word -> Full Mistake (Omission)
-        attempted++;
-        fullMistakes++;
-        omissionsCount++;
-
-        if (hlMode !== "off") {
-          W.spans.forEach(s => s.classList.add("bad"));
-          if (W.spaceSpan) W.spaceSpan.classList.add("bad");
-        }
-
-        reviewItems.push({
-          index: item.targetIdx + 1,
-          targetWord: item.target,
-          typedWord: "— (छूटा हुआ)",
-          status: "omission",
-          category: "Omission / छूटा हुआ शब्द",
-          reason: `गद्यांश का यह शब्द टाइप करने से छूट गया (Word omitted from passage: expected "${item.target}")`,
-          penalty: 1.0
-        });
-      } else {
-        // Unattempted word at the end
-        if (finished) {
-          unattemptedItems.push({
-            index: item.targetIdx + 1,
-            targetWord: item.target,
-            typedWord: "—",
-            status: "skip",
-            category: "Unattempted / छूटा हुआ शब्द",
-            reason: "समय समाप्त होने के कारण यह शब्द टाइप नहीं हो पाया (Not attempted within time).",
-            penalty: 0
-          });
-        }
+      if (hlMode !== "off") {
+        W.spans.forEach(s => s.classList.add("bad"));
+        if (W.spaceSpan) W.spaceSpan.classList.add("bad");
       }
+
+      reviewItems.push({
+        index: item.targetIdx + 1,
+        targetWord: item.target,
+        typedWord: "— (छूटा हुआ)",
+        status: "omission",
+        category: "Omission / छूटा हुआ शब्द",
+        reason: `गद्यांश का यह शब्द टाइप करने से छूट गया (Word omitted from passage: expected "${item.target}")`,
+        penalty: 1.0
+      });
 
     } else if (item.type === "addition") {
       // Extra word typed
@@ -731,7 +738,7 @@ function compare() {
         fullMistakes++;
 
         reviewItems.push({
-          index: (lastAttemptedTargetIdx >= 0 ? lastAttemptedTargetIdx + 1 : 1),
+          index: (bestI > 0 ? bestI : 1),
           targetWord: "— (अतिरिक्त शब्द)",
           typedWord: item.typed,
           status: "full",
@@ -743,9 +750,20 @@ function compare() {
     }
   });
 
+  // Unattempted items (words from bestI to targetWords.length - 1)
+  const unattemptedItems = unattempted.map(u => ({
+    index: u.targetIdx + 1,
+    targetWord: u.target,
+    typedWord: "—",
+    status: "skip",
+    category: "Unattempted / छूटा हुआ शब्द",
+    reason: "समय समाप्त होने के कारण यह शब्द टाइप नहीं हो पाया (Not attempted within time).",
+    penalty: 0
+  }));
+
   // If live typing and no token is currently in-progress, set cursor on next unattempted word
   if (!finished && currentActiveTargetIdx === null && hlMode !== "off") {
-    const nextIdx = lastAttemptedTargetIdx + 1;
+    const nextIdx = bestI;
     if (nextIdx < wordsData.length) {
       const nextW = wordsData[nextIdx];
       nextW.el.classList.add("active");
@@ -758,7 +776,7 @@ function compare() {
 
   const totalMistakes = fullMistakes + (halfMistakes * 0.5);
   const pureWords = Math.max(0, attempted - totalMistakes);
-  const reachedEnd = (lastAttemptedTargetIdx >= wordsData.length - 1);
+  const reachedEnd = (bestI >= wordsData.length);
 
   return {
     okWords,
