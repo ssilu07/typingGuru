@@ -226,38 +226,235 @@ header {
 
 /* ── Main Layout ── */
 main {
-  max-width: 1000px;
+  max-width: 1060px;
   margin: 0 auto;
   padding: 20px 20px 80px;
   position: relative;
   z-index: 1;
 }
 
-/* ── Settings Bar ── */
-.settings {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 14px;
+body.in-test-view main {
+  max-width: 1240px;
+  padding: 12px 16px 40px;
+}
+
+/* ── Page Views (2-Page Architecture) ── */
+.page-view {
+  display: none;
+}
+.page-view.active {
+  display: block;
+  animation: pageFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═════════════════════════════════════════════════
+   PAGE 1: Setup & Configuration Portal Styles
+   ═════════════════════════════════════════════════ */
+.setup-hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.hero-badge {
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 16px;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent-2);
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+.hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+.hero-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.setup-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+  margin-bottom: 20px;
+}
+[data-theme="light"] .setup-card {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+}
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 24px;
+}
+.setup-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.setup-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.setup-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lbl-icon {
+  font-size: 13px;
+}
+
+.setup-select, .setup-input {
+  width: 100%;
+  font-size: 13.5px;
+  padding: 9px 12px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--ui);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+[data-theme="light"] .setup-select, [data-theme="light"] .setup-input {
+  background: #ffffff;
+  color: #111;
+  border-color: rgba(0,0,0,0.18);
+}
+.setup-select:hover, .setup-input:hover {
+  border-color: var(--accent);
+}
+.setup-select:focus, .setup-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,106,255,0.25);
+}
+.select-full {
+  max-width: 100%;
+  font-family: var(--dev), var(--ui);
+}
+
+/* Wide segmented controls */
+.seg-wide {
+  width: 100%;
+}
+.seg-wide button {
+  flex: 1;
+  text-align: center;
+  padding: 7px 10px;
+}
+
+/* Start test action button */
+.start-action-row {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+.btn-start-test {
+  width: 100%;
+  max-width: 440px;
+  padding: 13px 28px;
+  font-family: var(--ui);
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--grad);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: var(--grad-glow), 0 4px 16px rgba(124,106,255,0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.2s ease;
+}
+.btn-start-test:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 0 32px rgba(124,106,255,0.6), 0 8px 24px rgba(91,139,255,0.4);
+  filter: brightness(1.08);
+}
+.btn-start-test:active {
+  transform: translateY(0) scale(0.99);
+}
+.btn-start-test .btn-icon {
+  font-size: 18px;
+}
+
+.instructions-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 16px;
-  backdrop-filter: blur(12px);
+  padding: 16px 20px;
 }
-.set-group {
+.inst-header {
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
-.set-label {
-  font-size: 10px;
+
+/* ═════════════════════════════════════════════════
+   PAGE 2: Test & Fullscreen Exam Interface Styles
+   ═════════════════════════════════════════════════ */
+.test-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.btn-back-setup {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+  color: var(--text);
+  font-size: 12.5px;
   font-weight: 600;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
+  padding: 7px 15px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-back-setup:hover {
+  background: var(--border-2);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateX(-2px);
 }
 
 /* Segmented control */
@@ -291,51 +488,6 @@ main {
   box-shadow: 0 0 12px rgba(124,106,255,0.4);
 }
 .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-
-/* Select */
-select {
-  font-family: var(--dev);
-  font-size: 13px;
-  padding: 5px 10px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--border-2);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color var(--transition);
-  max-width: 220px;
-}
-[data-theme="light"] select {
-  background: #ffffff;
-  color: #111;
-}
-select:hover  { border-color: var(--accent); }
-select:focus  { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,106,255,0.2); }
-select option { background: #1a1b2e; color: #fff; }
-[data-theme="light"] select option { background: #ffffff; color: #111; }
-
-/* Name input */
-input[type=text] {
-  font-family: var(--ui);
-  font-size: 12px;
-  padding: 5px 10px;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--border-2);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  width: 110px;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-[data-theme="light"] input[type=text] {
-  background: #ffffff;
-  color: #111;
-}
-input[type=text]:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124,106,255,0.2);
-}
-input[type=text]::placeholder { color: var(--text-3); }
 
 /* Buttons */
 .btn {
@@ -376,7 +528,7 @@ input[type=text]::placeholder { color: var(--text-3); }
   display: grid;
   grid-template-columns: repeat(4,1fr);
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .stat {
   background: var(--surface);

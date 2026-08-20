@@ -40,189 +40,253 @@
 <!-- ── Main ── -->
 <main>
 
-  <!-- Settings Bar -->
-  <div class="settings">
-    <div class="set-group">
-      <span class="set-label">Language</span>
-      <select id="langSel" style="font-family:var(--ui)">
-        <option value="hindi">हिंदी (Mangal)</option>
-        <option value="english">English</option>
-      </select>
+  <!-- ══════════════════════════════════════════════
+       PAGE 1: Test Setup & Configuration Portal
+       ══════════════════════════════════════════════ -->
+  <div id="viewSetup" class="page-view active">
+    <div class="setup-hero">
+      <div class="hero-badge">⚡ Official Exam Simulator</div>
+      <h2 class="hero-title">टाइपिंग परीक्षा पोर्टल · Typing Test Setup</h2>
+      <p class="hero-desc">अपनी परीक्षा सेटिंग्स और गद्यांश चुनें, फिर नीचे दिए गए बटन पर क्लिक करके टेस्ट शुरू करें।</p>
     </div>
 
-    <div class="set-group">
-      <span class="set-label">Name</span>
-      <input type="text" id="nameIn" placeholder="Your name" value="SUMIT" maxlength="30">
-    </div>
+    <div class="setup-card">
+      <div class="setup-grid">
 
-    <div class="set-group">
-      <span class="set-label">Level</span>
-      <div class="seg" id="lvlSeg">
-        <button data-lvl="easy">Easy</button>
-        <button data-lvl="medium" class="active">Medium</button>
-        <button data-lvl="hard">Hard</button>
-        <button data-lvl="words">Hard Words</button>
+        <!-- Language -->
+        <div class="setup-item">
+          <label class="setup-label">
+            <span class="lbl-icon">🌐</span> Language / भाषा
+          </label>
+          <select id="langSel" class="setup-select">
+            <option value="hindi">हिंदी (Mangal Inscript)</option>
+            <option value="english">English</option>
+          </select>
+        </div>
+
+        <!-- Candidate Name -->
+        <div class="setup-item">
+          <label class="setup-label">
+            <span class="lbl-icon">👤</span> Candidate Name / नाम
+          </label>
+          <input type="text" id="nameIn" class="setup-input" placeholder="Your name" value="SUMIT" maxlength="30">
+        </div>
+
+        <!-- Difficulty Level -->
+        <div class="setup-item full-width">
+          <label class="setup-label">
+            <span class="lbl-icon">📊</span> Difficulty Level / स्तर
+          </label>
+          <div class="seg seg-wide" id="lvlSeg">
+            <button data-lvl="easy">Easy (सरल)</button>
+            <button data-lvl="medium" class="active">Medium (मध्यम)</button>
+            <button data-lvl="hard">Hard (कठिन)</button>
+            <button data-lvl="words">Hard Words (शब्द)</button>
+          </div>
+        </div>
+
+        <!-- Passage Selection -->
+        <div class="setup-item full-width">
+          <label class="setup-label" id="passageLabel">
+            <span class="lbl-icon">📖</span> Passage Selection / गद्यांश चयन
+          </label>
+          <select id="passageSel" class="setup-select select-full"></select>
+        </div>
+
+        <!-- Duration Selection -->
+        <div class="setup-item full-width">
+          <label class="setup-label">
+            <span class="lbl-icon">⏱</span> Test Duration / समय सीमा
+          </label>
+          <div class="seg seg-wide" id="durSeg">
+            <button data-min="1">1 min</button>
+            <button data-min="2">2 min</button>
+            <button data-min="5">5 min</button>
+            <button data-min="10">10 min</button>
+            <button data-min="15" class="active">15 min</button>
+          </div>
+        </div>
+
+        <!-- Highlight Option -->
+        <div class="setup-item">
+          <label class="setup-label">
+            <span class="lbl-icon">✨</span> Word Highlight / हाइलाइट
+          </label>
+          <div class="seg" id="hlSeg">
+            <button data-hl="on" class="active">On (चालू)</button>
+            <button data-hl="off">Off (बंद)</button>
+          </div>
+        </div>
+
+        <!-- Keyboard Mode (Hindi only) -->
+        <div class="setup-item" id="kbGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">⌨</span> Hindi Keyboard Mode
+          </label>
+          <div class="seg" id="kbSeg">
+            <button data-kb="inscript" class="active">Inscript (built-in)</button>
+            <button data-kb="system">System</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Start Typing Button -->
+      <div class="start-action-row">
+        <button class="btn btn-start-test" id="startTestBtn">
+          <span class="btn-icon">🚀</span>
+          <span class="btn-text">Start Typing Test · टाइपिंग शुरू करें</span>
+        </button>
       </div>
     </div>
 
-    <div class="set-group">
-      <span class="set-label" id="passageLabel">Passage</span>
-      <select id="passageSel"></select>
-    </div>
-
-    <div class="set-group">
-      <span class="set-label">Time</span>
-      <div class="seg" id="durSeg">
-        <button data-min="1">1 min</button>
-        <button data-min="2">2 min</button>
-        <button data-min="5">5 min</button>
-        <button data-min="10">10 min</button>
-        <button data-min="15" class="active">15 min</button>
+    <!-- Hints & Instructions on Setup Page -->
+    <div class="instructions-card">
+      <div class="inst-header">
+        <span class="inst-icon">💡</span> <b>Exam Instructions &amp; Tips / निर्देश</b>
       </div>
+      <p class="hint" id="hintHi">
+        Jo word type kar rahe ho wo passage mein <b>purple highlight</b> rehta hai. <b>Space</b> dabate hi agla word aa jata hai — galat/adhura word laal ho jata hai par aage asar nahi karta.
+        <b>Hover over any word</b> to see which keys to press (⇧ = Shift). Conjuncts क्ष (⇧&amp;), त्र (⇧^), ज्ञ (⇧%), श्र (⇧*) are single keys; for । press ⇧&gt;.
+      </p>
+      <p class="hint" id="hintEn" style="display:none">
+        The word you are typing stays <b>highlighted in purple</b> in the passage. Press <b>Space</b> to move to the next word — a wrong or unfinished word turns red but never affects the next one. Type normally with your English keyboard.
+      </p>
     </div>
-
-    <div class="set-group">
-      <span class="set-label">Highlight</span>
-      <div class="seg" id="hlSeg">
-        <button data-hl="on" class="active">On</button>
-        <button data-hl="off">Off</button>
-      </div>
-    </div>
-
-    <div class="set-group" id="kbGroup">
-      <span class="set-label">Keyboard</span>
-      <div class="seg" id="kbSeg">
-        <button data-kb="inscript" class="active">Inscript (built-in)</button>
-        <button data-kb="system">System</button>
-      </div>
-    </div>
-
-    <button class="btn btn-ghost" id="restartBtn">↺ Restart</button>
   </div>
 
-  <!-- Stats Bar -->
-  <div class="stats">
-    <div class="stat timer" id="timerStat">
-      <div class="k">Time Left</div>
-      <div class="v" id="timeV">15:00</div>
-    </div>
-    <div class="stat">
-      <div class="k">Speed (WPM)</div>
-      <div class="v" id="wpmV">0</div>
-    </div>
-    <div class="stat">
-      <div class="k">Accuracy</div>
-      <div class="v" id="accV">0%</div>
-    </div>
-    <div class="stat">
-      <div class="k">Wrong (Full / Half)</div>
-      <div class="v" id="errV">0 / 0</div>
-    </div>
-  </div>
 
-  <!-- ── Exam Interface Container ── -->
-  <div class="exam-panel">
-    <!-- Top Royal Blue Header Bar -->
-    <div class="exam-header-top">
-      <div class="exam-header-title" id="testHeaderTitle">Typing Test Id 39041 - Legal - Criminal Negligence Liability - Passage 9</div>
+  <!-- ══════════════════════════════════════════════
+       PAGE 2: Full-screen Exam Typing Interface
+       ══════════════════════════════════════════════ -->
+  <div id="viewTest" class="page-view" style="display:none;">
+
+    <!-- Top Action Bar for Test Page -->
+    <div class="test-topbar">
+      <button class="btn btn-back-setup" id="backToSetupBtn">
+        ← Back to Settings / सेटिंग्स बदलें
+      </button>
+      <div class="test-topbar-actions">
+        <button class="btn btn-ghost" id="restartBtn">↺ Restart Test</button>
+      </div>
     </div>
 
-    <!-- Black Sub-Header Bar -->
-    <div class="exam-header-sub">
-      <div class="exam-sub-title" id="testSubTitle">UP Police SI/ASI/Computer Operator English Typing</div>
+    <!-- Stats Bar -->
+    <div class="stats">
+      <div class="stat timer" id="timerStat">
+        <div class="k">Time Left</div>
+        <div class="v" id="timeV">15:00</div>
+      </div>
+      <div class="stat">
+        <div class="k">Speed (WPM)</div>
+        <div class="v" id="wpmV">0</div>
+      </div>
+      <div class="stat">
+        <div class="k">Accuracy</div>
+        <div class="v" id="accV">0%</div>
+      </div>
+      <div class="stat">
+        <div class="k">Wrong (Full / Half)</div>
+        <div class="v" id="errV">0 / 0</div>
+      </div>
     </div>
 
-    <!-- Control & Candidate Info Bar -->
-    <div class="exam-control-bar">
-      <div class="control-left">
-        <div class="exam-pill">
-          <!-- Audio Toggle Button -->
-          <button type="button" class="pill-btn" id="audioToggleBtn" title="Toggle Keypress Sound" aria-label="Toggle sound">
-            <svg class="pill-icon" id="audioIconMute" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <line x1="23" y1="9" x2="17" y2="15"></line>
-              <line x1="17" y1="9" x2="23" y2="15"></line>
-            </svg>
-            <svg class="pill-icon" id="audioIconOn" style="display:none;" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            </svg>
-          </button>
+    <!-- ── Exam Interface Container ── -->
+    <div class="exam-panel">
+      <!-- Top Royal Blue Header Bar -->
+      <div class="exam-header-top">
+        <div class="exam-header-title" id="testHeaderTitle">Typing Test Id 39041 - Legal - Criminal Negligence Liability - Passage 9</div>
+      </div>
 
-          <!-- Fullscreen Button -->
-          <button type="button" class="pill-btn" id="fullscreenBtn" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
-            <svg class="pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <polyline points="9 21 3 21 3 15"></polyline>
-              <line x1="21" y1="3" x2="14" y2="10"></line>
-              <line x1="3" y1="21" x2="10" y2="14"></line>
-            </svg>
-          </button>
+      <!-- Black Sub-Header Bar -->
+      <div class="exam-header-sub">
+        <div class="exam-sub-title" id="testSubTitle">UP Police SI/ASI/Computer Operator English Typing</div>
+      </div>
 
-          <!-- Font Size Selector (A-, A, A+) -->
-          <div class="font-size-group" id="fontSizeGroup">
-            <button type="button" class="font-btn" data-size="sm" title="Small Font">A-</button>
-            <button type="button" class="font-btn active" data-size="md" title="Standard Font">A</button>
-            <button type="button" class="font-btn" data-size="lg" title="Large Font">A+</button>
+      <!-- Control & Candidate Info Bar -->
+      <div class="exam-control-bar">
+        <div class="control-left">
+          <div class="exam-pill">
+            <!-- Audio Toggle Button -->
+            <button type="button" class="pill-btn" id="audioToggleBtn" title="Toggle Keypress Sound" aria-label="Toggle sound">
+              <svg class="pill-icon" id="audioIconMute" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+              <svg class="pill-icon" id="audioIconOn" style="display:none;" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </button>
+
+            <!-- Fullscreen Button -->
+            <button type="button" class="pill-btn" id="fullscreenBtn" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
+              <svg class="pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </button>
+
+            <!-- Font Size Selector (A-, A, A+) -->
+            <div class="font-size-group" id="fontSizeGroup">
+              <button type="button" class="font-btn" data-size="sm" title="Small Font">A-</button>
+              <button type="button" class="font-btn active" data-size="md" title="Standard Font">A</button>
+              <button type="button" class="font-btn" data-size="lg" title="Large Font">A+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-right">
+          <!-- Exam Timer -->
+          <div class="exam-timer-box">
+            <span class="timer-label">Time left:-</span>
+            <span class="timer-val" id="examTimeV">15:00</span>
+          </div>
+
+          <!-- Candidate Avatar + Name -->
+          <div class="candidate-box">
+            <div class="candidate-avatar">
+              <svg viewBox="0 0 64 64" width="46" height="46" fill="none">
+                <defs>
+                  <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4a90e2" />
+                    <stop offset="100%" stop-color="#1f4b8e" />
+                  </linearGradient>
+                  <radialGradient id="headGrad" cx="40%" cy="35%" r="60%">
+                    <stop offset="0%" stop-color="#80b3ff" />
+                    <stop offset="60%" stop-color="#3d75c2" />
+                    <stop offset="100%" stop-color="#193f77" />
+                  </radialGradient>
+                </defs>
+                <rect width="64" height="64" rx="8" fill="#dce6f2" />
+                <circle cx="32" cy="22" r="12" fill="url(#headGrad)" />
+                <path d="M12 56 C12 40, 20 37, 32 37 C44 37, 52 40, 52 56 Z" fill="url(#avatarGrad)" />
+              </svg>
+            </div>
+            <div class="candidate-name" id="candidateNameDisp">SUMIT</div>
           </div>
         </div>
       </div>
 
-      <div class="control-right">
-        <!-- Exam Timer -->
-        <div class="exam-timer-box">
-          <span class="timer-label">Time left:-</span>
-          <span class="timer-val" id="examTimeV">15:00</span>
-        </div>
+      <!-- Upper Passage Box -->
+      <div class="passage-card exam-passage-box">
+        <div class="passage" id="passage" aria-label="Passage to type"></div>
+      </div>
 
-        <!-- Candidate Avatar + Name -->
-        <div class="candidate-box">
-          <div class="candidate-avatar">
-            <svg viewBox="0 0 64 64" width="46" height="46" fill="none">
-              <defs>
-                <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#4a90e2" />
-                  <stop offset="100%" stop-color="#1f4b8e" />
-                </linearGradient>
-                <radialGradient id="headGrad" cx="40%" cy="35%" r="60%">
-                  <stop offset="0%" stop-color="#80b3ff" />
-                  <stop offset="60%" stop-color="#3d75c2" />
-                  <stop offset="100%" stop-color="#193f77" />
-                </radialGradient>
-              </defs>
-              <rect width="64" height="64" rx="8" fill="#dce6f2" />
-              <circle cx="32" cy="22" r="12" fill="url(#headGrad)" />
-              <path d="M12 56 C12 40, 20 37, 32 37 C44 37, 52 40, 52 56 Z" fill="url(#avatarGrad)" />
-            </svg>
-          </div>
-          <div class="candidate-name" id="candidateNameDisp">SUMIT</div>
-        </div>
+      <!-- Lower Typing Box (Lime Green) -->
+      <div class="typing-card exam-typing-box">
+        <textarea id="input" lang="hi" spellcheck="false" autocomplete="off"
+          placeholder="Start typing here… your full text stays visible. Press Space to move to the next word."></textarea>
       </div>
     </div>
 
-    <!-- Upper Passage Box -->
-    <div class="passage-card exam-passage-box">
-      <div class="passage" id="passage" aria-label="Passage to type"></div>
-    </div>
+    <!-- Warning -->
+    <div class="warn" id="engWarn">⚠ English letters detected. Switch to <b>Inscript (built-in)</b> mode above, or enable a Hindi keyboard on your system — this test is Hindi-only.</div>
 
-    <!-- Lower Typing Box (Lime Green) -->
-    <div class="typing-card exam-typing-box">
-      <textarea id="input" lang="hi" spellcheck="false" autocomplete="off"
-        placeholder="Start typing here… your full text stays visible. Press Space to move to the next word."></textarea>
-    </div>
   </div>
-
-  <!-- Warning -->
-  <div class="warn" id="engWarn">⚠ English letters detected. Switch to <b>Inscript (built-in)</b> mode above, or enable a Hindi keyboard on your system — this test is Hindi-only.</div>
-
-  <!-- Hints -->
-  <p class="hint" id="hintHi">
-    💡 Jo word type kar rahe ho wo passage mein <b>purple highlight</b> rehta hai. <b>Space</b> dabate hi agla word aa jata hai — galat/adhura word laal ho jata hai par aage asar nahi karta.
-    <b>Hover over any word</b> to see which keys to press (⇧ = Shift). Conjuncts क्ष (⇧&amp;), त्र (⇧^), ज्ञ (⇧%), श्र (⇧*) are single keys; for । press ⇧&gt;.
-  </p>
-  <p class="hint" id="hintEn" style="display:none">
-    💡 The word you are typing stays <b>highlighted in purple</b> in the passage. Press <b>Space</b> to move to the next word — a wrong or unfinished word turns red but never affects the next one. Type normally with your English keyboard.
-  </p>
 
 </main>
 
@@ -255,6 +319,7 @@
       <li><span class="lab">Backspaces:</span><span class="val red"><span id="rBackspaces">0</span><span class="unit">times</span></span></li>
     </ul>
     <div class="r-foot">
+      <button class="btn btn-secondary" id="resBackSetupBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">⚙ Change Test</button>
       <button class="btn btn-secondary" id="reviewBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">🔍 Review Mistakes</button>
       <button class="btn btn-danger" id="againBtn">↺ Retake Test</button>
     </div>
@@ -358,6 +423,7 @@
     </div>
 
     <div class="r-foot rev-foot">
+      <button class="btn btn-secondary" id="revSetupBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">⚙ Change Test</button>
       <button class="btn btn-ghost" id="revBackResultBtn">← View Result Card</button>
       <button class="btn btn-danger" id="revRetakeBtn">↺ Retake Test</button>
     </div>

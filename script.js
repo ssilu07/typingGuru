@@ -644,7 +644,10 @@ function reset() {
   }
   loadPassage();
   updateHintsAndPlaceholder();
-  inputEl.focus();
+  const testView = el("viewTest");
+  if (testView && testView.style.display !== "none") {
+    inputEl.focus();
+  }
 }
 
 /* ── Review Mode Functions ── */
@@ -964,7 +967,10 @@ el("langSel").addEventListener("change", () => {
 
 sel.addEventListener("change", reset);
 el("restartBtn").addEventListener("click", reset);
-el("againBtn").addEventListener("click", reset);
+el("againBtn").addEventListener("click", () => {
+  overlay.classList.remove("show");
+  reset();
+});
 el("reviewBtn").addEventListener("click", openReviewModal);
 el("closeReviewBtn").addEventListener("click", closeReviewModal);
 el("revBackResultBtn").addEventListener("click", closeReviewModal);
@@ -972,6 +978,50 @@ el("revRetakeBtn").addEventListener("click", () => {
   el("reviewOverlay").classList.remove("show");
   reset();
 });
+
+/* ── Page Navigation (Setup View <-> Test View) ── */
+function switchPage(page) {
+  const setupView = el("viewSetup");
+  const testView = el("viewTest");
+  if (page === "test") {
+    setupView.style.display = "none";
+    setupView.classList.remove("active");
+    testView.style.display = "block";
+    testView.classList.add("active");
+    document.body.classList.add("in-test-view");
+    reset();
+    inputEl.focus();
+  } else {
+    clearInterval(timerId); timerId = null;
+    testView.style.display = "none";
+    testView.classList.remove("active");
+    setupView.style.display = "block";
+    setupView.classList.add("active");
+    document.body.classList.remove("in-test-view");
+    overlay.classList.remove("show");
+    if (el("reviewOverlay")) el("reviewOverlay").classList.remove("show");
+  }
+}
+
+const startTestBtn = el("startTestBtn");
+if (startTestBtn) {
+  startTestBtn.addEventListener("click", () => switchPage("test"));
+}
+
+const backToSetupBtn = el("backToSetupBtn");
+if (backToSetupBtn) {
+  backToSetupBtn.addEventListener("click", () => switchPage("setup"));
+}
+
+const resBackSetupBtn = el("resBackSetupBtn");
+if (resBackSetupBtn) {
+  resBackSetupBtn.addEventListener("click", () => switchPage("setup"));
+}
+
+const revSetupBtn = el("revSetupBtn");
+if (revSetupBtn) {
+  revSetupBtn.addEventListener("click", () => switchPage("setup"));
+}
 
 document.querySelectorAll("#revFilterSeg button").forEach(b => {
   b.addEventListener("click", () => {
