@@ -25,6 +25,9 @@
       </div>
     </div>
     <div class="nav-right">
+      <button class="btn btn-practice-nav" id="openPracticeNavBtn" title="मात्रा एवं अर्धाक्षर विशेष अभ्यास">
+        🎯 Matra &amp; Shift Drills
+      </button>
       <div class="nav-badge">
         <span class="dot"></span>
         UP Police · Mangal Inscript · Legal
@@ -48,6 +51,20 @@
       <div class="hero-badge">⚡ Official Exam Simulator</div>
       <h2 class="hero-title">टाइपिंग परीक्षा पोर्टल · Typing Test Setup</h2>
       <p class="hero-desc">अपनी परीक्षा सेटिंग्स और गद्यांश चुनें, फिर नीचे दिए गए बटन पर क्लिक करके टेस्ट शुरू करें।</p>
+    </div>
+
+    <!-- Practice Mode Direct Access Banner -->
+    <div class="practice-cta-card">
+      <div class="pcta-left">
+        <div class="pcta-icon">🎯</div>
+        <div class="pcta-text">
+          <h3>मात्रा एवं अर्धाक्षर विशेष ड्रिल · Matra &amp; Shift Drills</h3>
+          <p>स्पीड बढ़ाने के लिए अर्धाक्षर (हलंत D), Shift की वर्ण (क्ष, त्र, ज्ञ, श्र, ऋ, ः, ँ) और समस्त मात्राओं का अलग से विशेष अभ्यास करें।</p>
+        </div>
+      </div>
+      <button class="btn btn-practice-cta" id="openPracticeBtn">
+        <span>⚡ ओपन ड्रिल प्रैक्टिस पोर्टल</span>
+      </button>
     </div>
 
     <div class="setup-card">
@@ -288,6 +305,176 @@
 
   </div>
 
+
+  <!-- ══════════════════════════════════════════════
+       PAGE 3: Dedicated Matra & Shift Drill Arena
+       ══════════════════════════════════════════════ -->
+  <div id="viewPractice" class="page-view" style="display:none;">
+
+    <!-- Top Action Bar -->
+    <div class="test-topbar">
+      <button class="btn btn-back-setup" id="pracBackBtn">
+        ← Back to Exam Portal / मुख्य पोर्टल
+      </button>
+      <div class="test-topbar-actions">
+        <button class="btn btn-ghost" id="pracRestartBtn">↺ Restart Drill / रीस्टार्ट</button>
+      </div>
+    </div>
+
+    <!-- Practice Hero & Guide Toggle -->
+    <div class="prac-hero">
+      <div class="prac-hero-badge">🎯 Special Target Drill Practice</div>
+      <h2 class="prac-hero-title">मात्रा, अर्धाक्षर एवं शिफ्ट कुंजी विशेष अभ्यास · Matra &amp; Shift Drills</h2>
+      <p class="prac-hero-desc">
+        हिंदी टाइपिंग में स्पीड बढ़ाने के लिए मात्राओं, हलंत (अर्धाक्षर) और Shift की वर्णों की अलग से डेली ड्रिल प्रैक्टिस करें।
+      </p>
+    </div>
+
+    <!-- Interactive Inscript Cheatsheet Card -->
+    <div class="prac-cheatsheet-card">
+      <div class="pcs-header" id="toggleGuideBtn" role="button" tabindex="0">
+        <div class="pcs-title">
+          <span class="pcs-icon">⌨</span>
+          <b>Inscript Matra &amp; Shift Quick Guide / शॉर्टकट नियम</b>
+        </div>
+        <span class="pcs-toggle-tag" id="guideToggleText">छिपाएं ▲</span>
+      </div>
+      <div class="pcs-body" id="guideBody">
+        <div class="pcs-grid">
+          <div class="pcs-col">
+            <h4>अर्धाक्षर (हलंत Key: <kbd class="k-badge">D</kbd>)</h4>
+            <p class="pcs-hint">किसी भी अक्षर के बाद <b>D (्)</b> दबाने पर वह आधा हो जाता है:</p>
+            <div class="pcs-pills">
+              <span class="pcs-pill"><b>क्या</b> = K + D + / + E</span>
+              <span class="pcs-pill"><b>प्यार</b> = H + D + / + E + J</span>
+              <span class="pcs-pill"><b>स्थान</b> = M + D + ⇧L + E + V</span>
+              <span class="pcs-pill"><b>उज्ज्वल</b> = ⇧G + P + D + P + B + N</span>
+            </div>
+          </div>
+
+          <div class="pcs-col">
+            <h4>Shift संयुक्ताक्षर (Single Shift Keys)</h4>
+            <p class="pcs-hint">ये वर्ण सीधे <b>Shift + Key</b> से टाइप होते हैं:</p>
+            <div class="pcs-pills">
+              <span class="pcs-pill"><b>क्ष</b> = <kbd class="k-badge">⇧&amp;</kbd></span>
+              <span class="pcs-pill"><b>त्र</b> = <kbd class="k-badge">⇧^</kbd></span>
+              <span class="pcs-pill"><b>ज्ञ</b> = <kbd class="k-badge">⇧%</kbd></span>
+              <span class="pcs-pill"><b>श्र</b> = <kbd class="k-badge">⇧*</kbd></span>
+              <span class="pcs-pill"><b>ऋ</b> = <kbd class="k-badge">⇧+</kbd></span>
+              <span class="pcs-pill"><b>ः</b> = <kbd class="k-badge">⇧_</kbd></span>
+              <span class="pcs-pill"><b>ँ</b> = <kbd class="k-badge">⇧X</kbd></span>
+              <span class="pcs-pill"><b>।</b> = <kbd class="k-badge">⇧&gt;</kbd></span>
+              <span class="pcs-pill"><b>्र</b> = <kbd class="k-badge">⇧#</kbd></span>
+              <span class="pcs-pill"><b>र्</b> = <kbd class="k-badge">⇧$</kbd></span>
+            </div>
+          </div>
+
+          <div class="pcs-col">
+            <h4>मात्राएं (Matras) &amp; Shift स्वर</h4>
+            <p class="pcs-hint">मात्रा एवं स्वर कुंजी संदर्भ:</p>
+            <div class="pcs-pills">
+              <span class="pcs-pill"><b>ा</b> = E</span>
+              <span class="pcs-pill"><b>ि</b> = F</span>
+              <span class="pcs-pill"><b>ी</b> = R</span>
+              <span class="pcs-pill"><b>ु</b> = G</span>
+              <span class="pcs-pill"><b>ू</b> = T</span>
+              <span class="pcs-pill"><b>ृ</b> = =</span>
+              <span class="pcs-pill"><b>े</b> = S</span>
+              <span class="pcs-pill"><b>ै</b> = W</span>
+              <span class="pcs-pill"><b>ो</b> = A</span>
+              <span class="pcs-pill"><b>ौ</b> = Q</span>
+              <span class="pcs-pill"><b>ं</b> = X</span>
+              <span class="pcs-pill"><b>ॉ</b> = \</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Practice Configuration & Control Bar -->
+    <div class="setup-card prac-config-card">
+      <div class="setup-grid">
+        <!-- Category Selection -->
+        <div class="setup-item full-width">
+          <label class="setup-label">
+            <span class="lbl-icon">📂</span> Practice Category / अभ्यास श्रेणी
+          </label>
+          <div class="seg seg-wide seg-scrollable" id="pracCatSeg"></div>
+        </div>
+
+        <!-- Drill Set Selection -->
+        <div class="setup-item full-width">
+          <label class="setup-label">
+            <span class="lbl-icon">🎯</span> Drill Set Selection / अभ्यास सेट
+          </label>
+          <select id="pracSetSel" class="setup-select select-full"></select>
+        </div>
+
+        <!-- Duration Selection -->
+        <div class="setup-item">
+          <label class="setup-label">
+            <span class="lbl-icon">⏱</span> Practice Duration / समय सीमा
+          </label>
+          <div class="seg" id="pracDurSeg">
+            <button data-min="1">1 min</button>
+            <button data-min="2" class="active">2 min</button>
+            <button data-min="5">5 min</button>
+            <button data-min="0">∞ Free (सतत)</button>
+          </div>
+        </div>
+
+        <!-- Keyboard Mode Selection -->
+        <div class="setup-item">
+          <label class="setup-label">
+            <span class="lbl-icon">⌨</span> Hindi Keyboard
+          </label>
+          <div class="seg" id="pracKbSeg">
+            <button data-kb="inscript" class="active">Inscript (built-in)</button>
+            <button data-kb="system">System</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Practice Stats Bar -->
+    <div class="stats prac-stats-bar">
+      <div class="stat timer" id="pracTimerStat">
+        <div class="k">Time Left</div>
+        <div class="v" id="pracTimeV">02:00</div>
+      </div>
+      <div class="stat">
+        <div class="k">Speed (WPM)</div>
+        <div class="v" id="pracWpmV">0</div>
+      </div>
+      <div class="stat">
+        <div class="k">Accuracy</div>
+        <div class="v" id="pracAccV">0%</div>
+      </div>
+      <div class="stat">
+        <div class="k">Pure / Mistakes</div>
+        <div class="v" id="pracErrV">0 / 0</div>
+      </div>
+    </div>
+
+    <!-- Practice Typing Arena -->
+    <div class="exam-panel prac-panel">
+      <!-- Upper Practice Passage Box -->
+      <div class="passage-card exam-passage-box">
+        <div class="passage" id="pracPassage" aria-label="Drill text to practice"></div>
+      </div>
+
+      <!-- Lower Typing Textarea -->
+      <div class="typing-card exam-typing-box">
+        <textarea id="pracInput" lang="hi" spellcheck="false" autocomplete="off"
+          placeholder="अभ्यास यहाँ टाइप करना शुरू करें… हर शब्द के बाद Space दबाएं। शब्द पर Hover करके इनस्क्रिप्ट की (Inscript keys) देखें।"></textarea>
+      </div>
+    </div>
+
+    <!-- Warning -->
+    <div class="warn" id="pracEngWarn">⚠ English letters detected. Switch to <b>Inscript (built-in)</b> mode above, or enable a Hindi keyboard on your system.</div>
+
+  </div>
+
 </main>
 
 <!-- Tooltip -->
@@ -433,6 +620,36 @@
   </div>
 </div>
 
+<!-- Practice Result Overlay -->
+<div class="overlay" id="pracOverlay" role="dialog" aria-modal="true" aria-labelledby="pracResultTitle">
+  <div class="result">
+    <div class="r-head">
+      <h2 id="pracResultTitle">Drill Practice Summary</h2>
+      <span class="trophy" id="pracTrophy">⚡</span>
+    </div>
+    <div class="r-hero">
+      <div class="r-wpm-value"><span id="pracResWpm">0.00</span> WPM</div>
+      <div class="r-wpm-label">Practice Speed (ड्रिल गति)</div>
+      <div class="r-qual-badge qual-pass" id="pracResBadge">WELL DONE (शानदार अभ्यास)</div>
+    </div>
+    <ul class="r-rows">
+      <li><span class="lab">Drill Set:</span><span class="val" id="pracResName">—</span></li>
+      <li><span class="lab">Total Attempted:</span><span class="val"><span id="pracResTotal">0</span><span class="unit">words</span></span></li>
+      <li><span class="lab">Pure Words (शुद्ध):</span><span class="val green"><span id="pracResPure">0</span><span class="unit">words</span></span></li>
+      <li><span class="lab">Mistakes (गलतियां):</span><span class="val red"><span id="pracResErr">0</span><span class="unit">words</span></span></li>
+      <li><span class="lab">Accuracy (शुद्धता):</span><span class="val blue"><span id="pracResAcc">0.00</span><span class="unit">%</span></span></li>
+      <li><span class="lab">Drill Duration:</span><span class="val"><span id="pracResTime">0.0</span><span class="unit">min</span></span></li>
+      <li><span class="lab">Backspaces Used:</span><span class="val red"><span id="pracResBackspaces">0</span><span class="unit">times</span></span></li>
+    </ul>
+    <div class="r-foot">
+      <button class="btn btn-secondary" id="pracResBackSetupBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">← Exam Portal</button>
+      <button class="btn btn-secondary" id="pracNextBtn" style="background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-weight:600;">➡️ Next Drill</button>
+      <button class="btn btn-danger" id="pracAgainBtn">↺ Retake Drill</button>
+    </div>
+  </div>
+</div>
+
 <script src="script.js?v=3.2" defer></script>
+<script src="practice.js?v=3.2" defer></script>
 </body>
 </html>
