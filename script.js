@@ -502,6 +502,7 @@ function loadPassage() {
 
 /* ── Tooltips ── */
 function attachTooltips() {
+  if (!passageEl) return;
   passageEl.querySelectorAll(".word").forEach(w => {
     w.addEventListener("mouseenter", () => showTip(w));
     w.addEventListener("mouseleave", hideTip);
@@ -509,10 +510,10 @@ function attachTooltips() {
   });
 }
 function showTip(w) {
-  if (lang !== "hindi") return;
   const word = w.dataset.word;
-  if (!word) return;
+  if (!word || !/[\u0900-\u097F]/.test(word)) return;
   const units = keysForWord(word);
+  if (!units || units.length === 0) return;
   tip.innerHTML = '<div class="t-word">' + word + ' <small>— Inscript keys</small></div>' +
     '<div class="chips">' + units.map(u =>
       '<div class="chip"><div class="u">' + u.u + '</div><div class="kk">' + u.k + '</div></div>'
@@ -526,7 +527,7 @@ function showTip(w) {
   tip.style.left = x + "px";
   tip.style.top = y + "px";
 }
-function hideTip() { tip.style.display = "none"; }
+function hideTip() { if (tip) tip.style.display = "none"; }
 
 /* ── Timer ── */
 function fmt(t) { return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); }

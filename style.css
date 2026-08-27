@@ -840,17 +840,112 @@ body.lang-hindi .exam-typing-box textarea {
 /* ── Tooltip ── */
 #tip {
   position: fixed;
-  z-index: 200;
+  z-index: 1000;
   display: none;
-  max-width: 440px;
-  background: #1a1b2e;
-  border: 1px solid rgba(255,255,255,0.15);
+  max-width: 480px;
+  background: #151828;
+  color: #f0f1ff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--radius);
   padding: 12px 14px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 24px rgba(124,106,255,0.25);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 24px rgba(124, 106, 255, 0.28);
   pointer-events: none;
-  animation: fadeUp 0.15s ease;
+  animation: fadeUp 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
+
+[data-theme="light"] #tip {
+  background: #ffffff;
+  color: #0f1020;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  box-shadow: 0 14px 36px rgba(15, 16, 32, 0.14), 0 2px 10px rgba(124, 106, 255, 0.12);
+}
+
+.t-word {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--dev), var(--ui);
+  line-height: 1.3;
+}
+
+[data-theme="light"] .t-word {
+  color: #0f1020;
+}
+
+.t-word small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  font-family: var(--ui);
+}
+
+[data-theme="light"] .t-word small {
+  color: #636888;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+[data-theme="light"] .chip {
+  background: #f3f5fa;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.chip .u {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0f1ff;
+  font-family: var(--dev), 'Times New Roman', serif;
+  line-height: 1.2;
+}
+
+[data-theme="light"] .chip .u {
+  color: #0f1020;
+}
+
+.chip .kk {
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 700;
+  color: #a78bfa;
+  margin-top: 3px;
+  background: rgba(124, 106, 255, 0.2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .chip .kk {
+  color: #5b48e6;
+  background: rgba(91, 72, 230, 0.12);
+}
+
 @keyframes fadeUp {
   from { opacity:0; transform: translateY(6px); }
   to   { opacity:1; transform: translateY(0); }
