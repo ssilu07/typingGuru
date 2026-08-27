@@ -151,6 +151,17 @@
           </div>
         </div>
 
+        <!-- Typing Sound Option -->
+        <div class="setup-item" id="soundGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">🔊</span> Typing Sound / टाइपिंग साउंड
+          </label>
+          <div class="seg" id="soundSeg">
+            <button type="button" data-sound="off" class="active">Off (बंद)</button>
+            <button type="button" data-sound="on">On (चालू)</button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Start Typing Button -->
@@ -322,6 +333,10 @@
         ← Back to Exam Portal / मुख्य पोर्टल
       </button>
       <div class="test-topbar-actions">
+        <button type="button" class="btn btn-ghost btn-sound-toggle" id="pracAudioToggleBtn" title="Toggle Keypress Sound">
+          <span class="sound-icon-mute">🔇 Sound: Off</span>
+          <span class="sound-icon-on" style="display:none;">🔊 Sound: On</span>
+        </button>
         <button class="btn btn-ghost" id="pracRestartBtn">↺ Restart Drill / रीस्टार्ट</button>
       </div>
     </div>
@@ -479,6 +494,17 @@
           <div class="seg" id="pracKbSeg">
             <button data-kb="inscript" class="active">Inscript (built-in)</button>
             <button data-kb="system">System</button>
+          </div>
+        </div>
+
+        <!-- Typing Sound Option (Practice) -->
+        <div class="setup-item" id="pracSoundGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">🔊</span> Typing Sound / टाइपिंग साउंड
+          </label>
+          <div class="seg" id="pracSoundSeg">
+            <button type="button" data-sound="off" class="active">Off (बंद)</button>
+            <button type="button" data-sound="on">On (चालू)</button>
           </div>
         </div>
       </div>

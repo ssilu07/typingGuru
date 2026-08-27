@@ -209,26 +209,170 @@ function keysForWord(word) {
 
 /* ── Web Audio Synthesizer for Keystrokes ── */
 let audioCtx = null;
-let soundEnabled = false;
+let soundEnabled = (localStorage.getItem("tg-sound") === "on"); // Default is false/off
 
-function playKeySound() {
+function initAudioContext() {
+  if (!audioCtx) {
+    try {
+      const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtxClass) audioCtx = new AudioCtxClass();
+    } catch (e) {}
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume().catch(() => {});
+  }
+}
+
+function setSoundEnabled(enabled, persist = true) {
+  soundEnabled = !!enabled;
+  if (persist) {
+    localStorage.setItem("tg-sound", soundEnabled ? "on" : "off");
+  }
+  if (soundEnabled) {
+    initAudioContext();
+  }
+
+  // Sync Setup Seg Buttons
+  document.querySelectorAll("#soundSeg button").forEach(b => {
+    b.classList.toggle("active", (b.dataset.sound === "on") === soundEnabled);
+  });
+
+  // Sync Practice Seg Buttons
+  document.querySelectorAll("#pracSoundSeg button").forEach(b => {
+    b.classList.toggle("active", (b.dataset.sound === "on") === soundEnabled);
+  });
+
+  // Sync Exam Pill Audio Button
+  const muteIcon = document.getElementById("audioIconMute");
+  const onIcon = document.getElementById("audioIconOn");
+  const audioBtn = document.getElementById("audioToggleBtn");
+  if (muteIcon) muteIcon.style.display = soundEnabled ? "none" : "";
+  if (onIcon) onIcon.style.display = soundEnabled ? "" : "none";
+  if (audioBtn) {
+    audioBtn.classList.toggle("active", soundEnabled);
+    audioBtn.title = soundEnabled ? "Typing Sound: ON (Click to Mute)" : "Typing Sound: OFF (Click to Unmute)";
+  }
+
+  // Sync Practice Topbar Button
+  const pracAudioBtn = document.getElementById("pracAudioToggleBtn");
+  if (pracAudioBtn) {
+    const pracMute = pracAudioBtn.querySelector(".sound-icon-mute");
+    const pracOn = pracAudioBtn.querySelector(".sound-icon-on");
+    if (pracMute) pracMute.style.display = soundEnabled ? "none" : "";
+    if (pracOn) pracOn.style.display = soundEnabled ? "" : "none";
+    pracAudioBtn.classList.toggle("active", soundEnabled);
+    pracAudioBtn.title = soundEnabled ? "Typing Sound: ON (Click to Turn Off)" : "Typing Sound: OFF (Click to Turn On)";
+  }
+}
+window.setSoundEnabled = setSoundEnabled;
+
+function playKeySound(type = "key") {
   if (!soundEnabled) return;
   try {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(450, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.035);
-    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.035);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.04);
+    initAudioContext();
+    if (!audioCtx) return;
+
+    const t = audioCtx.currentTime;
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.24, t);
+    masterGain.connect(audioCtx.destination);
+
+    // Natural random pitch variation (+/- 6%)
+    const pitch = 0.94 + Math.random() * 0.12;
+
+    if (type === "space") {
+      // Spacebar: deeper, richer clack
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(170 * pitch, t);
+      osc.frequency.exponentialRampToValueAtTime(50, t + 0.045);
+
+      oscGain.gain.setValueAtTime(0.35, t);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+
+      osc.connect(oscGain);
+      oscGain.connect(masterGain);
+      osc.start(t);
+      osc.stop(t + 0.05);
+
+      const bufferSize = Math.floor(audioCtx.sampleRate * 0.012);
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(1300 * pitch, t);
+      filter.Q.setValueAtTime(2.5, t);
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.20, t);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+      noise.start(t);
+      noise.stop(t + 0.02);
+    } else if (type === "backspace") {
+      // Backspace: crisp high snap
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(460 * pitch, t);
+      osc.frequency.exponentialRampToValueAtTime(110, t + 0.035);
+
+      oscGain.gain.setValueAtTime(0.3, t);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+
+      osc.connect(oscGain);
+      oscGain.connect(masterGain);
+      osc.start(t);
+      osc.stop(t + 0.04);
+    } else {
+      // Standard Keypress: crisp mechanical switch clack + body resonance
+      // 1. High transient click (sharp noise burst)
+      const bufferSize = Math.floor(audioCtx.sampleRate * 0.008);
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(2900 * pitch, t);
+      filter.Q.setValueAtTime(3.5, t);
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.25, t);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.01);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+      noise.start(t);
+      noise.stop(t + 0.012);
+
+      // 2. Tactile body thud
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(320 * pitch, t);
+      osc.frequency.exponentialRampToValueAtTime(75, t + 0.03);
+
+      oscGain.gain.setValueAtTime(0.28, t);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+
+      osc.connect(oscGain);
+      oscGain.connect(masterGain);
+      osc.start(t);
+      osc.stop(t + 0.035);
+    }
   } catch (e) {}
 }
+window.playKeySound = playKeySound;
 
 /* ── Grapheme Utilities ── */
 const segmenter = (typeof Intl !== "undefined" && Intl.Segmenter)
@@ -1054,7 +1198,8 @@ function closeReviewModal() {
 /* ── Inscript Typing & Key Sounds ── */
 inputEl.addEventListener("keydown", e => {
   if (e.key === "Backspace") backspaceCount++;
-  playKeySound();
+  const soundType = e.key === " " ? "space" : (e.key === "Backspace" ? "backspace" : "key");
+  playKeySound(soundType);
   if (lang !== "hindi") return;
   if (kbMode !== "inscript") return;
   if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -1132,18 +1277,19 @@ document.querySelectorAll("#hlSeg button").forEach(b => {
 });
 
 /* ── Audio, Fullscreen, Font Size & Name Controls ── */
+document.querySelectorAll("#soundSeg button").forEach(b => {
+  b.addEventListener("click", () => {
+    setSoundEnabled(b.dataset.sound === "on");
+  });
+});
+
 const audioBtn = el("audioToggleBtn");
 if (audioBtn) {
   audioBtn.addEventListener("click", () => {
-    soundEnabled = !soundEnabled;
-    const muteIcon = el("audioIconMute"), onIcon = el("audioIconOn");
-    if (muteIcon) muteIcon.style.display = soundEnabled ? "none" : "";
-    if (onIcon) onIcon.style.display = soundEnabled ? "" : "none";
-    if (soundEnabled && !audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    setSoundEnabled(!soundEnabled);
   });
 }
+setSoundEnabled(soundEnabled, false);
 
 const fsBtn = el("fullscreenBtn");
 if (fsBtn) {

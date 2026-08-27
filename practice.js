@@ -706,7 +706,8 @@ function setupPracticeEvents() {
   if (pracInputEl) {
     pracInputEl.addEventListener("keydown", e => {
       if (e.key === "Backspace") pracBackspaceCount++;
-      if (typeof playKeySound === "function") playKeySound();
+      const soundType = e.key === " " ? "space" : (e.key === "Backspace" ? "backspace" : "key");
+      if (typeof playKeySound === "function") playKeySound(soundType);
 
       // Only intercept for Inscript when in Hindi mode
       if (pracLang !== "hindi" || pracKbMode !== "inscript") return;
@@ -789,6 +790,23 @@ function setupPracticeEvents() {
       if (pracInputEl) pracInputEl.focus();
     });
   });
+
+  document.querySelectorAll("#pracSoundSeg button").forEach(b => {
+    b.addEventListener("click", () => {
+      if (typeof setSoundEnabled === "function") {
+        setSoundEnabled(b.dataset.sound === "on");
+      }
+    });
+  });
+
+  const pracAudioToggleBtn = document.getElementById("pracAudioToggleBtn");
+  if (pracAudioToggleBtn) {
+    pracAudioToggleBtn.addEventListener("click", () => {
+      if (typeof setSoundEnabled === "function" && typeof soundEnabled !== "undefined") {
+        setSoundEnabled(!soundEnabled);
+      }
+    });
+  }
 
   const openPracticeNavBtn = document.getElementById("openPracticeNavBtn");
   if (openPracticeNavBtn) {

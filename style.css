@@ -649,6 +649,32 @@ body.in-test-view main {
 .pill-btn:hover {
   background-color: rgba(0,0,0,0.08);
 }
+.pill-btn.active {
+  background-color: rgba(37, 99, 235, 0.16);
+  color: #1d4ed8;
+}
+.pill-btn.active svg {
+  stroke: #1d4ed8;
+}
+[data-theme="dark"] .pill-btn.active {
+  background-color: rgba(96, 165, 250, 0.22);
+  color: #60a5fa;
+}
+[data-theme="dark"] .pill-btn.active svg {
+  stroke: #60a5fa;
+}
+.btn-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+.btn-sound-toggle.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(124, 106, 255, 0.12);
+}
 .pill-icon {
   width: 17px;
   height: 17px;
