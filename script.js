@@ -212,16 +212,24 @@ let audioCtx = null;
 let soundEnabled = (localStorage.getItem("tg-sound") === "on"); // Default is false/off
 
 function initAudioContext() {
-  if (!audioCtx) {
-    try {
+  try {
+    if (!audioCtx) {
       const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
       if (AudioCtxClass) audioCtx = new AudioCtxClass();
-    } catch (e) {}
-  }
-  if (audioCtx && audioCtx.state === "suspended") {
-    audioCtx.resume().catch(() => {});
-  }
+    }
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume().catch(() => {});
+    }
+  } catch (e) {}
 }
+
+// Ensure audio context resumes on any user interaction when sound is on
+window.addEventListener("click", () => {
+  if (soundEnabled) initAudioContext();
+}, { passive: true });
+window.addEventListener("keydown", () => {
+  if (soundEnabled) initAudioContext();
+}, { passive: true });
 
 function setSoundEnabled(enabled, persist = true) {
   soundEnabled = !!enabled;
@@ -230,6 +238,10 @@ function setSoundEnabled(enabled, persist = true) {
   }
   if (soundEnabled) {
     initAudioContext();
+    // Play preview sound when user explicitly enables it
+    if (persist) {
+      setTimeout(() => playKeySound("key"), 30);
+    }
   }
 
   // Sync Setup Seg Buttons
@@ -272,105 +284,134 @@ function playKeySound(type = "key") {
     initAudioContext();
     if (!audioCtx) return;
 
-    const t = audioCtx.currentTime;
-    const masterGain = audioCtx.createGain();
-    masterGain.gain.setValueAtTime(0.24, t);
-    masterGain.connect(audioCtx.destination);
-
-    // Natural random pitch variation (+/- 6%)
-    const pitch = 0.94 + Math.random() * 0.12;
+    const now = audioCtx.currentTime;
+    const pitchMod = 0.93 + Math.random() * 0.14;
 
     if (type === "space") {
-      // Spacebar: deeper, richer clack
-      const osc = audioCtx.createOscillator();
-      const oscGain = audioCtx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(170 * pitch, t);
-      osc.frequency.exponentialRampToValueAtTime(50, t + 0.045);
-
-      oscGain.gain.setValueAtTime(0.35, t);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
-
-      osc.connect(oscGain);
-      oscGain.connect(masterGain);
-      osc.start(t);
-      osc.stop(t + 0.05);
-
-      const bufferSize = Math.floor(audioCtx.sampleRate * 0.012);
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      // Spacebar: Rich deep mechanical clack + bottom-out thump
+      const dur = 0.055;
+      const bufSize = Math.floor(audioCtx.sampleRate * dur);
+      const buffer = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      for (let i = 0; i < bufSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.25));
+      }
       const noise = audioCtx.createBufferSource();
       noise.buffer = buffer;
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = "bandpass";
-      filter.frequency.setValueAtTime(1300 * pitch, t);
-      filter.Q.setValueAtTime(2.5, t);
 
-      const noiseGain = audioCtx.createGain();
-      noiseGain.gain.setValueAtTime(0.20, t);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
+      const bandpass = audioCtx.createBiquadFilter();
+      bandpass.type = "bandpass";
+      bandpass.frequency.setValueAtTime(1100 * pitchMod, now);
+      bandpass.Q.setValueAtTime(1.8, now);
 
-      noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(masterGain);
-      noise.start(t);
-      noise.stop(t + 0.02);
-    } else if (type === "backspace") {
-      // Backspace: crisp high snap
+      const nGain = audioCtx.createGain();
+      nGain.gain.setValueAtTime(0.45, now);
+      nGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+      noise.connect(bandpass);
+      bandpass.connect(nGain);
+      nGain.connect(audioCtx.destination);
+      noise.start(now);
+
+      // Low body tone (thump)
       const osc = audioCtx.createOscillator();
-      const oscGain = audioCtx.createGain();
+      const oGain = audioCtx.createGain();
       osc.type = "triangle";
-      osc.frequency.setValueAtTime(460 * pitch, t);
-      osc.frequency.exponentialRampToValueAtTime(110, t + 0.035);
+      osc.frequency.setValueAtTime(210 * pitchMod, now);
+      osc.frequency.exponentialRampToValueAtTime(55, now + 0.065);
 
-      oscGain.gain.setValueAtTime(0.3, t);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+      oGain.gain.setValueAtTime(0.55, now);
+      oGain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
 
-      osc.connect(oscGain);
-      oscGain.connect(masterGain);
-      osc.start(t);
-      osc.stop(t + 0.04);
-    } else {
-      // Standard Keypress: crisp mechanical switch clack + body resonance
-      // 1. High transient click (sharp noise burst)
-      const bufferSize = Math.floor(audioCtx.sampleRate * 0.008);
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      osc.connect(oGain);
+      oGain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.07);
+
+    } else if (type === "backspace") {
+      // Backspace: Crisp dual-snap mechanical return
+      const dur = 0.04;
+      const bufSize = Math.floor(audioCtx.sampleRate * dur);
+      const buffer = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
       const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+      for (let i = 0; i < bufSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.2));
+      }
       const noise = audioCtx.createBufferSource();
       noise.buffer = buffer;
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = "bandpass";
-      filter.frequency.setValueAtTime(2900 * pitch, t);
-      filter.Q.setValueAtTime(3.5, t);
 
-      const noiseGain = audioCtx.createGain();
-      noiseGain.gain.setValueAtTime(0.25, t);
-      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.01);
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "highpass";
+      filter.frequency.setValueAtTime(2200 * pitchMod, now);
+
+      const nGain = audioCtx.createGain();
+      nGain.gain.setValueAtTime(0.45, now);
+      nGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
 
       noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(masterGain);
-      noise.start(t);
-      noise.stop(t + 0.012);
+      filter.connect(nGain);
+      nGain.connect(audioCtx.destination);
+      noise.start(now);
 
-      // 2. Tactile body thud
+      // Snap tone
       const osc = audioCtx.createOscillator();
-      const oscGain = audioCtx.createGain();
+      const oGain = audioCtx.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(320 * pitch, t);
-      osc.frequency.exponentialRampToValueAtTime(75, t + 0.03);
+      osc.frequency.setValueAtTime(520 * pitchMod, now);
+      osc.frequency.exponentialRampToValueAtTime(130, now + 0.045);
 
-      oscGain.gain.setValueAtTime(0.28, t);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+      oGain.gain.setValueAtTime(0.45, now);
+      oGain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
 
-      osc.connect(oscGain);
-      oscGain.connect(masterGain);
-      osc.start(t);
-      osc.stop(t + 0.035);
+      osc.connect(oGain);
+      oGain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.05);
+
+    } else {
+      // Standard Key: Crisp, punchy mechanical switch click + tactile bottom-out
+      const dur = 0.035;
+      const bufSize = Math.floor(audioCtx.sampleRate * dur);
+      const buffer = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.18));
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(2600 * pitchMod, now);
+      filter.Q.setValueAtTime(2.2, now);
+
+      const nGain = audioCtx.createGain();
+      nGain.gain.setValueAtTime(0.5, now);
+      nGain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+
+      noise.connect(filter);
+      filter.connect(nGain);
+      nGain.connect(audioCtx.destination);
+      noise.start(now);
+
+      // Resonant Body Thud (tactile bottom-out clack)
+      const osc = audioCtx.createOscillator();
+      const oGain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(380 * pitchMod, now);
+      osc.frequency.exponentialRampToValueAtTime(85, now + 0.04);
+
+      oGain.gain.setValueAtTime(0.45, now);
+      oGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+      osc.connect(oGain);
+      oGain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.045);
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("Audio playback error:", e);
+  }
 }
 window.playKeySound = playKeySound;
 
