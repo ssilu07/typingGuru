@@ -25,8 +25,8 @@
       </div>
     </div>
     <div class="nav-right">
-      <button class="btn btn-practice-nav" id="openPracticeNavBtn" title="मात्रा एवं अर्धाक्षर विशेष अभ्यास">
-        🎯 Matra &amp; Shift Drills
+      <button class="btn btn-practice-nav" id="openPracticeNavBtn" title="विशेष ड्रिल अभ्यास (Hindi &amp; English)">
+        🎯 Practice Drills
       </button>
       <div class="nav-badge">
         <span class="dot"></span>
@@ -58,13 +58,18 @@
       <div class="pcta-left">
         <div class="pcta-icon">🎯</div>
         <div class="pcta-text">
-          <h3>मात्रा एवं अर्धाक्षर विशेष ड्रिल · Matra &amp; Shift Drills</h3>
-          <p>स्पीड बढ़ाने के लिए अर्धाक्षर (हलंत D), Shift की वर्ण (क्ष, त्र, ज्ञ, श्र, ऋ, ः, ँ) और समस्त मात्राओं का अलग से विशेष अभ्यास करें।</p>
+          <h3>विशेष ड्रिल प्रैक्टिस पोर्टल · Practice Drills Arena</h3>
+          <p>हिंदी (मात्रा, अर्धाक्षर, शिफ्ट) एवं English (Home Row, Shift, Punctuation, Tricky Words, Speed Boosters) का अलग-अलग विशेष अभ्यास करें।</p>
         </div>
       </div>
-      <button class="btn btn-practice-cta" id="openPracticeBtn">
-        <span>⚡ ओपन ड्रिल प्रैक्टिस पोर्टल</span>
-      </button>
+      <div class="pcta-actions">
+        <button class="btn btn-practice-cta" id="openPracticeBtn">
+          <span>🇮🇳 हिंदी ड्रिल अभ्यास</span>
+        </button>
+        <button class="btn btn-practice-cta btn-practice-en" id="openPracEnBtn">
+          <span>🇬🇧 English Practice Drills</span>
+        </button>
+      </div>
     </div>
 
     <div class="setup-card">
@@ -321,26 +326,35 @@
       </div>
     </div>
 
+    <!-- Practice Language Selector Bar -->
+    <div class="prac-lang-bar">
+      <div class="seg prac-lang-seg" id="pracLangSeg">
+        <button data-plang="hindi" class="active">🇮🇳 हिंदी अभ्यास (Hindi Drills)</button>
+        <button data-plang="english">🇬🇧 English Practice Drills</button>
+      </div>
+    </div>
+
     <!-- Practice Hero & Guide Toggle -->
     <div class="prac-hero">
-      <div class="prac-hero-badge">🎯 Special Target Drill Practice</div>
-      <h2 class="prac-hero-title">मात्रा, अर्धाक्षर एवं शिफ्ट कुंजी विशेष अभ्यास · Matra &amp; Shift Drills</h2>
-      <p class="prac-hero-desc">
+      <div class="prac-hero-badge" id="pracHeroBadge">🎯 Special Target Drill Practice</div>
+      <h2 class="prac-hero-title" id="pracHeroTitle">मात्रा, अर्धाक्षर एवं शिफ्ट कुंजी विशेष अभ्यास · Matra &amp; Shift Drills</h2>
+      <p class="prac-hero-desc" id="pracHeroDesc">
         हिंदी टाइपिंग में स्पीड बढ़ाने के लिए मात्राओं, हलंत (अर्धाक्षर) और Shift की वर्णों की अलग से डेली ड्रिल प्रैक्टिस करें।
       </p>
     </div>
 
-    <!-- Interactive Inscript Cheatsheet Card -->
+    <!-- Interactive Cheatsheet Card -->
     <div class="prac-cheatsheet-card">
       <div class="pcs-header" id="toggleGuideBtn" role="button" tabindex="0">
         <div class="pcs-title">
           <span class="pcs-icon">⌨</span>
-          <b>Inscript Matra &amp; Shift Quick Guide / शॉर्टकट नियम</b>
+          <b id="guideTitleText">Inscript Matra &amp; Shift Quick Guide / शॉर्टकट नियम</b>
         </div>
         <span class="pcs-toggle-tag" id="guideToggleText">छिपाएं ▲</span>
       </div>
       <div class="pcs-body" id="guideBody">
-        <div class="pcs-grid">
+        <!-- Hindi Inscript Guide -->
+        <div class="pcs-grid" id="guideBodyHi">
           <div class="pcs-col">
             <h4>अर्धाक्षर (हलंत Key: <kbd class="k-badge">D</kbd>)</h4>
             <p class="pcs-hint">किसी भी अक्षर के बाद <b>D (्)</b> दबाने पर वह आधा हो जाता है:</p>
@@ -388,6 +402,40 @@
             </div>
           </div>
         </div>
+
+        <!-- English Touch Typing & Speed Guide -->
+        <div class="pcs-grid" id="guideBodyEn" style="display:none;">
+          <div class="pcs-col">
+            <h4>Home Row &amp; Finger Placements</h4>
+            <p class="pcs-hint">Basic home row finger rest positions:</p>
+            <div class="pcs-pills">
+              <span class="pcs-pill"><b>Left Hand</b>: A (Pinky) · S (Ring) · D (Mid) · F (Index)</span>
+              <span class="pcs-pill"><b>Right Hand</b>: J (Index) · K (Mid) · L (Ring) · ; (Pinky)</span>
+              <span class="pcs-pill"><b>Thumbs</b>: Spacebar (Left or Right Thumb)</span>
+              <span class="pcs-pill"><b>Index Reaches</b>: F → R, T, G, V, B | J → U, Y, H, N, M</span>
+            </div>
+          </div>
+
+          <div class="pcs-col">
+            <h4>Opposite Shift Key Rule (Fast Caps)</h4>
+            <p class="pcs-hint">Use opposite hand shift for effortless capital letters:</p>
+            <div class="pcs-pills">
+              <span class="pcs-pill"><b>Right-Hand Capitals</b> (P, O, I, U, Y, K, L, J, M): Press <b>Left Shift</b></span>
+              <span class="pcs-pill"><b>Left-Hand Capitals</b> (Q, W, E, R, T, A, S, D, F, Z, X, C): Press <b>Right Shift</b></span>
+              <span class="pcs-pill"><b>Punctuation</b>: <kbd class="k-badge">⇧"</kbd> (Quote) · <kbd class="k-badge">⇧:</kbd> (Colon) · <kbd class="k-badge">⇧?</kbd> (Question)</span>
+            </div>
+          </div>
+
+          <div class="pcs-col">
+            <h4>Exam Speed &amp; Precision Habits</h4>
+            <p class="pcs-hint">Essential exam accuracy principles:</p>
+            <div class="pcs-pills">
+              <span class="pcs-pill"><b>Spacing Rule</b>: Single Space <i>after</i> comma/period, never before</span>
+              <span class="pcs-pill"><b>Rhythm</b>: Keep continuous finger flow; don't pause after words</span>
+              <span class="pcs-pill"><b>95%+ Target</b>: Speed naturally surges once mistakes are below 5%</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -423,8 +471,8 @@
           </div>
         </div>
 
-        <!-- Keyboard Mode Selection -->
-        <div class="setup-item">
+        <!-- Keyboard Mode Selection (Hindi only) -->
+        <div class="setup-item" id="pracKbGroup">
           <label class="setup-label">
             <span class="lbl-icon">⌨</span> Hindi Keyboard
           </label>

@@ -1,9 +1,9 @@
 /* =====================================================
-   TypingGuru — Matra & Aadhe Akshar Practice Drills
+   TypingGuru — Matra, Shift & English Practice Drills
    practice.js
    ===================================================== */
 
-const PRACTICE_DRILLS = [
+const HINDI_PRACTICE_DRILLS = [
   {
     id: "aadhe_akshar",
     name: "1. अर्धाक्षर एवं हलंत (Aadhe Akshar)",
@@ -102,6 +102,114 @@ const PRACTICE_DRILLS = [
   }
 ];
 
+/* ── English Practice Drills (Dedicated & Completely Separate) ── */
+const ENGLISH_PRACTICE_DRILLS = [
+  {
+    id: "en_home_row",
+    name: "1. Home Row & Touch Typing (A S D F J K L ;)",
+    sets: [
+      {
+        name: "Home Row Core — A S D F J K L ; (Finger Foundation)",
+        text: "all ask fall flask glad hall lass salad sash alas dash flash glass slash alfalfa salad dad glad ask falls add flask gas lad shall dash salad sad ask flag half kafka fall glad flash alas dad flash fall glad salad hall lass flask sash dash alfalfa falls lad add gas dad sad flag half kafka all ask fall flask glad hall lass salad sash"
+      },
+      {
+        name: "Top Row & Reach Expansion — Q W E R T Y U I O P (Reach Agility)",
+        text: "type write quiet power tree root peer quote pretty paper power output query write tower report territory equip operate priority return require prototype property require output tweet query wiper poetry power write quote report tree paper power priority require territory property operate prototype equip write power tree type quote pretty report"
+      },
+      {
+        name: "Bottom Row & Full Agility — Z X C V B N M , . / (Full Keyboard Flow)",
+        text: "maximum zinc cabin amaze blaze brave bronze client carbon column complex combine examine example vanish vibrate volume vacuum zealous zigzag buzz zero zoom balance browse dynamic puzzle luxury exact zone examine matrix vanish bronze client column complex combine vibrate volume puzzle luxury maximum zinc cabin amaze brave blaze"
+      }
+    ]
+  },
+  {
+    id: "en_shift_capitals",
+    name: "2. Shift Keys & Capitalization (Uppercase & Acronyms)",
+    sets: [
+      {
+        name: "Proper Nouns & World Geography (Capitals & Place Names)",
+        text: "New Delhi London Washington Tokyo Paris Berlin Moscow Ottawa Canberra Beijing Singapore Cairo Madrid Rome Stockholm Dublin Amsterdam Brussels Vienna Bangkok Jakarta Seoul Brasilia Buenos Aires Wellington Copenhagen Helsinki Oslo Lisbon Athens Ankara Pretoria Nairobi New Delhi London Tokyo Washington Paris Berlin Moscow Ottawa Canberra Beijing Singapore Cairo Madrid"
+      },
+      {
+        name: "Government, Legal & Corporate Acronyms (Fast Shift Transitions)",
+        text: "UPPRPB UPSC SSC CGL CHSL IBPS SBI RBI IPC CrPC NCRB CCTNS AIIMS IIT IIM ISRO DRDO UNESCO UNICEF WHO WTO IMF NASA NATO Interpol Supreme Court High Court District Court Police Headquarters Ministry of Home Affairs Public Service Commission Directorate of Enforcement Comptroller and Auditor General Election Commission of India National Informatics Centre"
+      },
+      {
+        name: "Mixed Title Case & Capitalized Sentences (Left/Right Shift Drill)",
+        text: "The Constitution of India is the Supreme Law of the Sovereign Democratic Republic. The Supreme Court of India in New Delhi Delivered a Historic Judgment on Fundamental Rights. Every Citizen Must Uphold National Integrity, Public Order and Judicial Harmony. The Digital India Mission and National Cyber Security Policy Promote Technological Governance across the Nation."
+      }
+    ]
+  },
+  {
+    id: "en_punctuation_symbols",
+    name: "3. Punctuation & Special Symbols (Quotes, Semicolons & Symbols)",
+    sets: [
+      {
+        name: "Quotes, Semicolons, Colons & Hyphens (Exam Punctuation Drill)",
+        text: "Don't hesitate; it's essential. The Chairman stated: \"Dedication and honesty are non-negotiable.\" Rule No. 4(B) applies to all candidates; however, Section 12-A provides exceptions. Is it ready? Yes, it's 100% verified! Note: always double-check your facts, figures, and formatting—precision matters. Let's proceed: time is precious; don't make careless mistakes!"
+      },
+      {
+        name: "Legal Citations & Case References (Judicial/Administrative Formatting)",
+        text: "AIR 2026 SC 1428; (2025) 4 SCC 719 at p. 735. State of U.P. v. Ram Prakash & Ors., Criminal Appeal No. 492/2026 [Arising out of SLP (Crl.) No. 8912/2025]. IPC Sections: 302, 307, 420 & 120-B; CrPC Sec. 154(1) & 161(3). Order dated: 14.07.2026; Coram: Justice A.K. Sharma & Justice R.N. Verma. Reference: [G.O. No. 108/VIII-2-2026], Lucknow Bench."
+      },
+      {
+        name: "Technical, Currency & Special Characters (@, #, $, %, &, *, /, _, +, =)",
+        text: "Contact: support@typingguru.in | URL: https://typingguru.in/practice?user_id=1092&mode=strict. Server: 192.168.1.1:8080/api/v2/test_result#summary. Amount: $1,250.00 / ₹95,000/- (incl. 18% GST). Formula: A = P(1 + r/n)^(nt); Ratio: 16:9; Status: [ACTIVE] - 99.95% uptime. Hash: #TG-89041*SEC_2026 (Priority: High / Level: 05). Balance: +$450.00; Total: 100%."
+      }
+    ]
+  },
+  {
+    id: "en_numbers_alphanumeric",
+    name: "4. Numbers & Alphanumeric Drills (Number Row & Codes)",
+    sets: [
+      {
+        name: "Top Number Row Mastery (0-9 Digits & Mixed Alphanumeric Sequences)",
+        text: "Case 101 file 204 room 305 block 408 unit 509 ward 610 batch 712 code 819 zone 920 desk 135 port 246 item 357 rank 468 total 579 roll 680 pass 791 score 802 date 15/08/1947 year 2026 page 142 line 38 count 4905 time 10:45 AM speed 35.50 WPM score 98.75% room 204 block 509 code 819 port 246 total 579 batch 712 desk 135"
+      },
+      {
+        name: "Official Dates, Contact Numbers, PIN Codes & Serial IDs",
+        text: "FIR No. 208/2026, dated 15-08-2026; Mobile: +91-98765-43210, Landline: 0522-2401928; PIN: 226001, 110001, 400001, 700001, 600001; Aadhaar: 4920-1823-7645; Vehicle No. UP-32-AB-1234; Token: #TG-8902-X9; Transaction ID: TXN987654321012; Budget: ₹45,50,000.00; Percentage: 99.45% accuracy achieved in 15.00 minutes."
+      }
+    ]
+  },
+  {
+    id: "en_tricky_spellings",
+    name: "5. Tricky Words & Double Letters (Complex Spellings)",
+    sets: [
+      {
+        name: "Double Letters Muscle Memory (cc, mm, ss, rr, ll, nn, pp, tt)",
+        text: "accommodate embarrass harass occasion recommend necessary assess disappear committee occurrence aggression possess millennium successfully dilemma withhold misspell balloon exaggerate graffiti parallel interrupt privilege guarantee vacuum queue address bulletin collection discussion express flutter glitter happen illustrate juggle knuckle luggage mirror narrow opposite pattern qualify scribble trigger umbrella villain warrior yellow zigzag mattress broccoli zucchini espresso assessment occurrence possession aggressive questionnaire"
+      },
+      {
+        name: "Tricky Letter Combinations & Silent Letters (ph, gh, gn, kn, mn, ps, sc, rh)",
+        text: "rhythm twelfth lengths strengths awkward sphinx zephyr nymph abyss glyph kayak queue fjord yacht psychic vacuum igneous knapsack blizzard pharaoh asphyxia quartz jigsaw czar schism squeeze whisper zigzag gnash knoll wrist knuckle thumb solemn plumber crumb doubt subtle autumn hymn knight know knock knot gnarl gnome ghost ghetto ghastly drought light tight straight freight dough through although thorough throughout borough height weight weird sleigh neighbour freight reign foreign sovereign seize leisure receipt caffeine protein forfeit feint vein surveillance hygiene kaleidoscope receive ceiling deceive perceive conceit deceitful handkerchief hierarchy mischievous fiery sieve retrieve grieve relief belief cashier shield yield"
+      },
+      {
+        name: "Competitive Exam Confusables & Frequently Misspelled Words",
+        text: "conscientious prerequisite auxiliary surveillance supersede idiosyncrasy paraphernalia quintessential inadvertent acquiesce rendezvous bureaucracy maneuver camouflage hemorrhage lieutenant reconnaissance liaison sovereignty pseudonym disastrous pronunciation maintenance supersede rhythm gauge guarantee etiquette questionnaire prejudice leisure villain broccoli cemetery hierarchy weird accommodate occurrence privilege maintenance millennium judgment gauge separate definitely"
+      }
+    ]
+  },
+  {
+    id: "en_speed_booster",
+    name: "6. Exam Speed Booster Passages (High Speed Exam Passages)",
+    sets: [
+      {
+        name: "Speed Booster 1 — Constitution, Rule of Law & Public Administration",
+        text: "The Constitution of India is the supreme legal framework that governs the nation, ensuring equality, liberty, and justice to all citizens regardless of their background. An efficient, transparent, and responsive public administration is vital for upholding the rule of law and executing governmental policies with complete accountability. In this modern technological era, computer operators and administrative assistants play an indispensable role in maintaining accurate digital records, managing official communications, and accelerating judicial and executive workflows. Candidates preparing for high-speed typing examinations must maintain continuous finger rhythm, high mental concentration, and meticulous adherence to capitalization and punctuation marks. Regular daily practice on structured passages is the proven pathway to achieving benchmark speeds and complete transcription accuracy."
+      },
+      {
+        name: "Speed Booster 2 — Digital Technology, Cyber Security & Law Enforcement",
+        text: "Modern law enforcement agencies and judicial institutions rely heavily on computerized networks, biometric tracking databases, and high-speed data transmission systems. Initiatives like the Crime and Criminal Tracking Network and Systems (CCTNS) have interconnected thousands of police stations across the country, enabling immediate information sharing and enhanced investigative capabilities. In such critical operational environments, the role of skilled data processing personnel is paramount. A single clerical error in case registration, witness statement recording, or charge sheet filing can lead to significant legal complications. Therefore, typing proficiency demands not only swift key depression speed but also impeccable precision, disciplined backspace management, and strict compliance with standard keyboard layouts."
+      }
+    ]
+  }
+];
+
+const PRACTICE_DRILLS = HINDI_PRACTICE_DRILLS;
+
+/* ── Practice State ── */
+let pracLang = "hindi"; // "hindi" | "english"
 let pracCategory = "aadhe_akshar";
 let pracSetIdx = 0;
 let pracDurationSec = 120, pracTimeLeft = 120, pracTimerId = null, pracStartTime = 0;
@@ -110,6 +218,7 @@ let pracKbMode = "inscript";
 let pracWordsData = [];
 let pracBackspaceCount = 0;
 
+/* ── DOM References ── */
 const pracPassageEl = document.getElementById("pracPassage");
 const pracInputEl = document.getElementById("pracInput");
 const pracCatSeg = document.getElementById("pracCatSeg");
@@ -120,9 +229,94 @@ const pracAccV = document.getElementById("pracAccV");
 const pracErrV = document.getElementById("pracErrV");
 const pracOverlay = document.getElementById("pracOverlay");
 const pracEngWarn = document.getElementById("pracEngWarn");
+const pracHeroBadge = document.getElementById("pracHeroBadge");
+const pracHeroTitle = document.getElementById("pracHeroTitle");
+const pracHeroDesc = document.getElementById("pracHeroDesc");
+const guideBodyHi = document.getElementById("guideBodyHi");
+const guideBodyEn = document.getElementById("guideBodyEn");
+const guideTitleText = document.getElementById("guideTitleText");
+const pracKbGroup = document.getElementById("pracKbGroup");
+
+/* ── Helper to Get Active Drills Array ── */
+function getActiveDrills() {
+  return pracLang === "english" ? ENGLISH_PRACTICE_DRILLS : HINDI_PRACTICE_DRILLS;
+}
+
+/* ── Switch Practice Language (Hindi <-> English) ── */
+function setPracticeLang(newLang) {
+  pracLang = (newLang === "english") ? "english" : "hindi";
+
+  // Update Language Segment UI
+  document.querySelectorAll("#pracLangSeg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.plang === pracLang);
+  });
+
+  // Update Hero & Descriptions
+  if (pracHeroBadge) {
+    pracHeroBadge.textContent = (pracLang === "hindi")
+      ? "🎯 Special Target Drill Practice"
+      : "⚡ English Touch Typing & Speed Drills";
+  }
+  if (pracHeroTitle) {
+    pracHeroTitle.textContent = (pracLang === "hindi")
+      ? "मात्रा, अर्धाक्षर एवं शिफ्ट कुंजी विशेष अभ्यास · Matra & Shift Drills"
+      : "English Typing Practice Drills · स्पीड व शुद्धता अभ्यास";
+  }
+  if (pracHeroDesc) {
+    pracHeroDesc.textContent = (pracLang === "hindi")
+      ? "हिंदी टाइपिंग में स्पीड बढ़ाने के लिए मात्राओं, हलंत (अर्धाक्षर) और Shift की वर्णों की अलग से डेली ड्रिल प्रैक्टिस करें।"
+      : "Master touch typing rows, capital shift keys, punctuation, tricky spellings, numbers, and legal speed booster passages.";
+  }
+
+  // Update Cheatsheet Guide
+  if (guideTitleText) {
+    guideTitleText.textContent = (pracLang === "hindi")
+      ? "Inscript Matra & Shift Quick Guide / शॉर्टकट नियम"
+      : "English Touch Typing & Accuracy Guide / मुख्य नियम";
+  }
+  if (guideBodyHi && guideBodyEn) {
+    if (pracLang === "hindi") {
+      guideBodyHi.style.display = "";
+      guideBodyEn.style.display = "none";
+    } else {
+      guideBodyHi.style.display = "none";
+      guideBodyEn.style.display = "";
+    }
+  }
+
+  // Hide or Show Keyboard Mode Option
+  if (pracKbGroup) {
+    pracKbGroup.style.display = (pracLang === "hindi") ? "" : "none";
+  }
+
+  // Update Input Attributes & Placeholder
+  if (pracInputEl) {
+    pracInputEl.setAttribute("lang", pracLang === "hindi" ? "hi" : "en");
+    pracInputEl.placeholder = (pracLang === "hindi")
+      ? "अभ्यास यहाँ टाइप करना शुरू करें… हर शब्द के बाद Space दबाएं। शब्द पर Hover करके इनस्क्रिप्ट की (Inscript keys) देखें।"
+      : "Start typing the drill passage here… Press Space after each word. Maintain high accuracy and finger rhythm.";
+  }
+
+  // Update Warning Text
+  if (pracEngWarn) {
+    pracEngWarn.classList.remove("show");
+    pracEngWarn.innerHTML = (pracLang === "hindi")
+      ? "⚠ English letters detected. Switch to <b>Inscript (built-in)</b> mode above, or enable a Hindi keyboard on your system."
+      : "⚠ Hindi characters detected. This is an <b>English</b> practice drill — please type in English.";
+  }
+
+  // Reset drill category & set
+  const activeDrills = getActiveDrills();
+  pracCategory = activeDrills[0] ? activeDrills[0].id : "";
+  pracSetIdx = 0;
+
+  initPracticeCategories();
+  fillPracticeSets();
+  pracReset();
+}
 
 /* ── Page Navigation Override ── */
-window.switchPage = function(page) {
+window.switchPage = function(page, targetLang) {
   const setupView = document.getElementById("viewSetup");
   const testView = document.getElementById("viewTest");
   const practiceView = document.getElementById("viewPractice");
@@ -150,7 +344,17 @@ window.switchPage = function(page) {
       practiceView.classList.add("active");
     }
     document.body.classList.remove("in-test-view");
-    pracReset();
+
+    if (targetLang) {
+      setPracticeLang(targetLang);
+    } else {
+      const mainLang = document.getElementById("langSel")?.value;
+      if (mainLang && mainLang !== pracLang) {
+        setPracticeLang(mainLang);
+      } else {
+        pracReset();
+      }
+    }
   } else {
     // Setup Page
     if (testView) { testView.style.display = "none"; testView.classList.remove("active"); }
@@ -165,10 +369,17 @@ window.switchPage = function(page) {
   }
 };
 
+/* ── Initialize Category Buttons ── */
 function initPracticeCategories() {
   if (!pracCatSeg) return;
   pracCatSeg.innerHTML = "";
-  PRACTICE_DRILLS.forEach(cat => {
+  const drills = getActiveDrills();
+
+  if (!drills.some(c => c.id === pracCategory) && drills[0]) {
+    pracCategory = drills[0].id;
+  }
+
+  drills.forEach(cat => {
     const btn = document.createElement("button");
     btn.dataset.cat = cat.id;
     btn.textContent = cat.name;
@@ -185,10 +396,14 @@ function initPracticeCategories() {
   });
 }
 
+/* ── Fill Drill Sets in Select Dropdown ── */
 function fillPracticeSets() {
   if (!pracSetSel) return;
   pracSetSel.innerHTML = "";
-  const catObj = PRACTICE_DRILLS.find(c => c.id === pracCategory) || PRACTICE_DRILLS[0];
+  const drills = getActiveDrills();
+  const catObj = drills.find(c => c.id === pracCategory) || drills[0];
+  if (!catObj) return;
+
   catObj.sets.forEach((s, idx) => {
     const opt = document.createElement("option");
     opt.value = idx;
@@ -197,10 +412,12 @@ function fillPracticeSets() {
   });
 }
 
+/* ── Load Drill Passage & Build Word Tokens ── */
 function loadPracticeDrill() {
   if (!pracPassageEl) return;
-  const catObj = PRACTICE_DRILLS.find(c => c.id === pracCategory) || PRACTICE_DRILLS[0];
-  const setObj = (catObj && catObj.sets[pracSetIdx]) ? catObj.sets[pracSetIdx] : catObj.sets[0];
+  const drills = getActiveDrills();
+  const catObj = drills.find(c => c.id === pracCategory) || drills[0];
+  const setObj = (catObj && catObj.sets[pracSetIdx]) ? catObj.sets[pracSetIdx] : (catObj ? catObj.sets[0] : null);
   if (!setObj) return;
 
   const words = setObj.text.split(" ");
@@ -211,7 +428,10 @@ function loadPracticeDrill() {
     const wspan = document.createElement("span");
     wspan.className = "word";
     wspan.dataset.word = wtext;
-    const gs = (typeof graphemes === "function") ? graphemes(wtext) : Array.from(wtext);
+    const gs = (pracLang === "hindi" && typeof graphemes === "function")
+      ? graphemes(wtext)
+      : Array.from(wtext);
+
     const wspans = gs.map(g => {
       const s = document.createElement("span");
       s.className = "g";
@@ -237,17 +457,20 @@ function loadPracticeDrill() {
   attachPracticeTooltips();
 }
 
+/* ── Attach Inscript Tooltips (Hindi Only) ── */
 function attachPracticeTooltips() {
   if (!pracPassageEl) return;
+  if (pracLang !== "hindi") return;
+
   pracPassageEl.querySelectorAll(".word").forEach(w => {
     w.addEventListener("mouseenter", () => {
-      if (typeof showTip === "function") showTip(w);
+      if (pracLang === "hindi" && typeof showTip === "function") showTip(w);
     });
     w.addEventListener("mouseleave", () => {
       if (typeof hideTip === "function") hideTip();
     });
     w.addEventListener("touchstart", () => {
-      if (typeof showTip === "function") {
+      if (pracLang === "hindi" && typeof showTip === "function") {
         showTip(w);
         setTimeout(() => { if (typeof hideTip === "function") hideTip(); }, 2500);
       }
@@ -255,6 +478,7 @@ function attachPracticeTooltips() {
   });
 }
 
+/* ── Time Calculations ── */
 function pracElapsedMin() {
   if (!pracStarted || !pracStartTime) return 1 / 60;
   const m = (Date.now() - pracStartTime) / 60000;
@@ -267,21 +491,26 @@ function pracStartTimer() {
   pracTimerId = setInterval(() => {
     if (pracDurationSec > 0) {
       pracTimeLeft--;
-      const formatted = (typeof fmt === "function") ? fmt(pracTimeLeft) : `${Math.floor(pracTimeLeft / 60)}:${String(pracTimeLeft % 60).padStart(2, "0")}`;
+      const formatted = (typeof fmt === "function")
+        ? fmt(pracTimeLeft)
+        : `${Math.floor(pracTimeLeft / 60)}:${String(pracTimeLeft % 60).padStart(2, "0")}`;
       if (pracTimeV) pracTimeV.textContent = formatted;
       if (pracTimeLeft <= 10) document.getElementById("pracTimerStat")?.classList.add("low");
       pracUpdateStats();
       if (pracTimeLeft <= 0) pracFinish();
     } else {
-      // Unlimited mode: count elapsed upwards
+      // Free mode: count upwards
       const elSec = Math.floor((Date.now() - pracStartTime) / 1000);
-      const formatted = (typeof fmt === "function") ? fmt(elSec) : `${Math.floor(elSec / 60)}:${String(elSec % 60).padStart(2, "0")}`;
+      const formatted = (typeof fmt === "function")
+        ? fmt(elSec)
+        : `${Math.floor(elSec / 60)}:${String(elSec % 60).padStart(2, "0")}`;
       if (pracTimeV) pracTimeV.textContent = formatted;
       pracUpdateStats();
     }
   }, 1000);
 }
 
+/* ── Live Text Comparison ── */
 function pracCompare() {
   if (!pracInputEl) return { aligned: [], unattempted: [], bestI: 0 };
   const typedTokens = (typeof getTypedTokens === "function")
@@ -304,7 +533,9 @@ function pracCompare() {
     if (!w) return;
     if (item.isCurrent) {
       w.el.classList.add("active");
-      const uG = (typeof graphemes === "function") ? graphemes(item.typed) : Array.from(item.typed);
+      const uG = (pracLang === "hindi" && typeof graphemes === "function")
+        ? graphemes(item.typed)
+        : Array.from(item.typed);
       w.spans.forEach((s, idx) => {
         if (idx < uG.length) {
           s.classList.add(uG[idx] === w.g[idx] ? "ok" : "bad");
@@ -345,6 +576,7 @@ function pracCompare() {
   return { aligned, unattempted, bestI };
 }
 
+/* ── Live Stats Calculation ── */
 function pracUpdateStats() {
   const { aligned } = pracCompare();
   const elMin = pracElapsedMin();
@@ -375,6 +607,7 @@ function pracUpdateStats() {
   return { correctCount, errorCount, attempted, netWpm, grossWpm, accuracy, elMin };
 }
 
+/* ── Finish Drill & Display Results ── */
 function pracFinish() {
   if (pracFinished) return;
   pracFinished = true;
@@ -382,8 +615,9 @@ function pracFinish() {
   if (pracInputEl) pracInputEl.disabled = true;
 
   const stats = pracUpdateStats();
-  const catObj = PRACTICE_DRILLS.find(c => c.id === pracCategory) || PRACTICE_DRILLS[0];
-  const setObj = (catObj && catObj.sets[pracSetIdx]) ? catObj.sets[pracSetIdx] : catObj.sets[0];
+  const drills = getActiveDrills();
+  const catObj = drills.find(c => c.id === pracCategory) || drills[0];
+  const setObj = (catObj && catObj.sets[pracSetIdx]) ? catObj.sets[pracSetIdx] : (catObj ? catObj.sets[0] : null);
 
   const rwpm = document.getElementById("pracResWpm");
   if (rwpm) rwpm.textContent = stats.netWpm.toFixed(2);
@@ -404,21 +638,29 @@ function pracFinish() {
 
   const badge = document.getElementById("pracResBadge");
   if (badge) {
-    if (stats.accuracy >= 95 && stats.netWpm >= 25) {
+    const minBenchmarkWpm = (pracLang === "hindi") ? 25 : 35;
+    if (stats.accuracy >= 95 && stats.netWpm >= minBenchmarkWpm) {
       badge.className = "r-qual-badge qual-pass";
-      badge.textContent = "EXCELLENT · उत्कृष्ट गति व शुद्धता";
+      badge.textContent = (pracLang === "hindi")
+        ? "EXCELLENT · उत्कृष्ट गति व शुद्धता"
+        : "EXCELLENT · High Speed & Precision";
     } else if (stats.accuracy >= 85) {
       badge.className = "r-qual-badge qual-pass";
-      badge.textContent = "GOOD DRILL · अच्छा अभ्यास";
+      badge.textContent = (pracLang === "hindi")
+        ? "GOOD DRILL · अच्छा अभ्यास"
+        : "GOOD DRILL · Well Done";
     } else {
       badge.className = "r-qual-badge qual-fail";
-      badge.textContent = "PRACTICE MORE · पुनः अभ्यास करें";
+      badge.textContent = (pracLang === "hindi")
+        ? "PRACTICE MORE · पुनः अभ्यास करें"
+        : "PRACTICE MORE · Retake Drill";
     }
   }
 
   if (pracOverlay) pracOverlay.classList.add("show");
 }
 
+/* ── Reset Drill Arena ── */
 function pracReset() {
   clearInterval(pracTimerId); pracTimerId = null;
   pracStarted = false; pracFinished = false;
@@ -451,13 +693,15 @@ function pracReset() {
   }
 }
 
-/* Practice Event Listeners Setup */
+/* ── Setup Practice Events & Key Handlers ── */
 function setupPracticeEvents() {
   if (pracInputEl) {
     pracInputEl.addEventListener("keydown", e => {
       if (e.key === "Backspace") pracBackspaceCount++;
       if (typeof playKeySound === "function") playKeySound();
-      if (pracKbMode !== "inscript") return;
+
+      // Only intercept for Inscript when in Hindi mode
+      if (pracLang !== "hindi" || pracKbMode !== "inscript") return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const k = e.key;
       if (k.length !== 1) return;
@@ -476,23 +720,42 @@ function setupPracticeEvents() {
     pracInputEl.addEventListener("input", () => {
       if (pracFinished) return;
       if (!pracStarted && pracInputEl.value.length > 0) pracStartTimer();
-      if (/[A-Za-z]/.test(pracInputEl.value)) {
-        if (pracEngWarn) pracEngWarn.classList.add("show");
+
+      if (pracLang === "hindi") {
+        if (/[A-Za-z]/.test(pracInputEl.value)) {
+          if (pracEngWarn) pracEngWarn.classList.add("show");
+        } else {
+          if (pracEngWarn) pracEngWarn.classList.remove("show");
+        }
       } else {
-        if (pracEngWarn) pracEngWarn.classList.remove("show");
+        if (/[\u0900-\u097F]/.test(pracInputEl.value)) {
+          if (pracEngWarn) {
+            pracEngWarn.innerHTML = "⚠ Hindi characters detected. This is an <b>English</b> practice drill — please type in English.";
+            pracEngWarn.classList.add("show");
+          }
+        } else {
+          if (pracEngWarn) pracEngWarn.classList.remove("show");
+        }
       }
       
       pracUpdateStats();
       const tws = (typeof getTypedTokens === "function") ? getTypedTokens(pracInputEl.value, false) : [];
       const lastW = pracWordsData[pracWordsData.length - 1];
       if (tws.length > pracWordsData.length ||
-         (tws.length === pracWordsData.length && !tws[tws.length - 1].isCurrent && (typeof graphemes === "function" ? graphemes(tws[tws.length - 1].text).length : tws[tws.length - 1].text.length) >= (lastW ? lastW.g.length : 0))) {
+         (tws.length === pracWordsData.length && !tws[tws.length - 1].isCurrent && (pracLang === "hindi" && typeof graphemes === "function" ? graphemes(tws[tws.length - 1].text).length : tws[tws.length - 1].text.length) >= (lastW ? lastW.g.length : 0))) {
         pracFinish();
       }
     });
 
     pracInputEl.addEventListener("paste", e => e.preventDefault());
   }
+
+  // Language Bar Switcher
+  document.querySelectorAll("#pracLangSeg button").forEach(b => {
+    b.addEventListener("click", () => {
+      setPracticeLang(b.dataset.plang);
+    });
+  });
 
   if (pracSetSel) {
     pracSetSel.addEventListener("change", () => {
@@ -520,10 +783,22 @@ function setupPracticeEvents() {
   });
 
   const openPracticeNavBtn = document.getElementById("openPracticeNavBtn");
-  if (openPracticeNavBtn) openPracticeNavBtn.addEventListener("click", () => switchPage("practice"));
+  if (openPracticeNavBtn) {
+    openPracticeNavBtn.addEventListener("click", () => {
+      const mainLang = document.getElementById("langSel")?.value || "hindi";
+      switchPage("practice", mainLang);
+    });
+  }
 
   const openPracticeBtn = document.getElementById("openPracticeBtn");
-  if (openPracticeBtn) openPracticeBtn.addEventListener("click", () => switchPage("practice"));
+  if (openPracticeBtn) {
+    openPracticeBtn.addEventListener("click", () => switchPage("practice", "hindi"));
+  }
+
+  const openPracEnBtn = document.getElementById("openPracEnBtn");
+  if (openPracEnBtn) {
+    openPracEnBtn.addEventListener("click", () => switchPage("practice", "english"));
+  }
 
   const pracBackBtn = document.getElementById("pracBackBtn");
   if (pracBackBtn) pracBackBtn.addEventListener("click", () => switchPage("setup"));
@@ -544,12 +819,13 @@ function setupPracticeEvents() {
   if (pracNextBtn) {
     pracNextBtn.addEventListener("click", () => {
       if (pracOverlay) pracOverlay.classList.remove("show");
-      const catObj = PRACTICE_DRILLS.find(c => c.id === pracCategory) || PRACTICE_DRILLS[0];
-      if (pracSetIdx + 1 < catObj.sets.length) {
+      const drills = getActiveDrills();
+      const catObj = drills.find(c => c.id === pracCategory) || drills[0];
+      if (catObj && pracSetIdx + 1 < catObj.sets.length) {
         pracSetIdx++;
       } else {
-        const catIdx = PRACTICE_DRILLS.findIndex(c => c.id === pracCategory);
-        const nextCat = PRACTICE_DRILLS[(catIdx + 1) % PRACTICE_DRILLS.length];
+        const catIdx = drills.findIndex(c => c.id === pracCategory);
+        const nextCat = drills[(catIdx + 1) % drills.length];
         pracCategory = nextCat.id;
         pracSetIdx = 0;
         document.querySelectorAll("#pracCatSeg button").forEach(b => {
