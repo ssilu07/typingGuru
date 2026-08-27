@@ -119,6 +119,14 @@ const ENGLISH_PRACTICE_DRILLS = [
       {
         name: "Bottom Row & Full Agility — Z X C V B N M , . / (Full Keyboard Flow)",
         text: "maximum zinc cabin amaze blaze brave bronze client carbon column complex combine examine example vanish vibrate volume vacuum zealous zigzag buzz zero zoom balance browse dynamic puzzle luxury exact zone examine matrix vanish bronze client column complex combine vibrate volume puzzle luxury maximum zinc cabin amaze brave blaze"
+      },
+      {
+        name: "Left Hand All Rows — QWERT / ASDFG / ZXCVB (Top, Middle & Bottom Rows)",
+        text: "qwert asdfg zxcvb qaz wsx edc rfv tgb tgb rfv edc wsx qaz qwer asdf zxcv trew gfdsa bvcxz after badge beast brave bread caste crate crave dwarf exact feast stage cedar secret trade tract treat tree verse water weave wedge west wet wheat garage grease secret reward create effect treat trade street star stage start taste water great state waste draft extra grass grace grave fever cedar cadet care cage card cart cast cave date deaf debt deer draw face fade fake fast fear feed feet gate gear rage rate read rest safe seat seed tart tear text tree verb west stewardesses sweaterdresses defervesce reverberate desegregate waterbed vertebrate fiberglass backward baggage bravest database scatter degrade steadfast abstract address target average attract declare cabbage extract defeat desert faster freeze we create great treats after raw water tastes sweet as we star trade fast cars as we start race track test exact database state fast effect brave cast"
+      },
+      {
+        name: "Right Hand All Rows — YUIOP / HJKL; / NM,./ (Top, Middle & Bottom Rows)",
+        text: "yuiop hjkl; nm,./ yhn ujm ik, ol. p;/ p;/ ol. ik, ujm yhn yuio hjkl nm,. poiuy ;lkjh /.,mn jkl; uiop m,./ hjk yui nm, lollipop monopoly homophony million pinion pollinium opinion look moon jump milk pink lion union kill link pull poll hook loop mono oily null plum pump pony polo monk mini nylon imply onion hilly join hymn holy yolk pill pool plump jolly kink pupil unlink unlock unpin upon yummy yokel hill hulk hull hymn hypo icon ilk ill imply inky inkling input ion jonquil joy julio jump junk kill kiln kimono kink lion limp link lip look loom loon loop lump lymph milk mill million mimic mink minion monk mono monopoly mood moon mull mummy nylon oily onion oily opinion phylum pill pink pinion pion plink plum plump polo pool poop pull pulp pump punk puny pupil unholy union unlink unlock unpin upon yolk yummy only you look up in my pink pool on my hill upon union holy monks jump in joy looking upon yummy plums in my pink milk look upon million links on my monopoly pool"
       }
     ]
   },
