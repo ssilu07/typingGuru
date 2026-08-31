@@ -719,6 +719,60 @@ function pracReset() {
   }
 }
 
+/* ── Check Auto-Finish when Passage is Completed ── */
+function checkPracAutoFinish() {
+  if (pracFinished || !pracStarted) return;
+  const rawVal = pracInputEl ? pracInputEl.value : "";
+  if (!rawVal || rawVal.trim().length === 0) return;
+
+  const tws = (typeof getTypedTokens === "function") ? getTypedTokens(rawVal, false) : [];
+  const N = pracWordsData.length;
+  if (N === 0) return;
+
+  const lastW = pracWordsData[N - 1];
+  const lastTyped = tws[tws.length - 1];
+  const hasTrailingSpace = /\s$/.test(rawVal);
+
+  // 1. If more tokens typed than passage words
+  if (tws.length > N) {
+    pracFinish();
+    return;
+  }
+
+  // 2. If exactly N tokens typed (reached the last word)
+  if (tws.length === N) {
+    // 2a. Trailing space or token completed
+    if (hasTrailingSpace || !lastTyped.isCurrent) {
+      pracFinish();
+      return;
+    }
+    // 2b. Exact text match
+    if (lastTyped.text === lastW.text) {
+      pracFinish();
+      return;
+    }
+    // 2c. Grapheme length comparison
+    const targetLen = (pracLang === "hindi" && typeof graphemes === "function")
+      ? graphemes(lastW.text).length
+      : Array.from(lastW.text).length;
+    const typedLen = (pracLang === "hindi" && typeof graphemes === "function")
+      ? graphemes(lastTyped.text).length
+      : Array.from(lastTyped.text).length;
+
+    if (typedLen >= targetLen) {
+      pracFinish();
+      return;
+    }
+  }
+
+  // 3. Check alignment from pracCompare()
+  const { bestI } = pracCompare();
+  if (bestI >= N) {
+    pracFinish();
+    return;
+  }
+}
+
 /* ── Setup Practice Events & Key Handlers ── */
 function setupPracticeEvents() {
   if (pracInputEl) {
@@ -726,6 +780,15 @@ function setupPracticeEvents() {
       if (e.key === "Backspace") pracBackspaceCount++;
       const soundType = e.key === " " ? "space" : (e.key === "Backspace" ? "backspace" : "key");
       if (typeof playKeySound === "function") playKeySound(soundType);
+
+      // Enter key submits drill immediately
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (pracStarted || pracInputEl.value.trim().length > 0) {
+          pracFinish();
+        }
+        return;
+      }
 
       // Only intercept for Inscript when in Hindi mode
       if (pracLang !== "hindi" || pracKbMode !== "inscript") return;
@@ -766,15 +829,20 @@ function setupPracticeEvents() {
       }
       
       pracUpdateStats();
-      const tws = (typeof getTypedTokens === "function") ? getTypedTokens(pracInputEl.value, false) : [];
-      const lastW = pracWordsData[pracWordsData.length - 1];
-      if (tws.length > pracWordsData.length ||
-         (tws.length === pracWordsData.length && !tws[tws.length - 1].isCurrent && (pracLang === "hindi" && typeof graphemes === "function" ? graphemes(tws[tws.length - 1].text).length : tws[tws.length - 1].text.length) >= (lastW ? lastW.g.length : 0))) {
-        pracFinish();
-      }
+      checkPracAutoFinish();
     });
 
     pracInputEl.addEventListener("paste", e => e.preventDefault());
+  }
+
+  // Submit Drill Button
+  const pracSubmitBtn = document.getElementById("pracSubmitBtn");
+  if (pracSubmitBtn) {
+    pracSubmitBtn.addEventListener("click", () => {
+      if (pracStarted || (pracInputEl && pracInputEl.value.trim().length > 0)) {
+        pracFinish();
+      }
+    });
   }
 
   // Language Bar Switcher
