@@ -263,11 +263,40 @@
               </svg>
             </button>
 
-            <!-- Font Size Selector (A-, A, A+) -->
-            <div class="font-size-group" id="fontSizeGroup">
-              <button type="button" class="font-btn" data-size="sm" title="Small Font">A-</button>
-              <button type="button" class="font-btn active" data-size="md" title="Standard Font">A</button>
-              <button type="button" class="font-btn" data-size="lg" title="Large Font">A+</button>
+            <!-- Font Size & Scale Meter -->
+            <div class="font-size-group" id="fontSizeGroup" role="group" aria-label="Font Size Scale Controls">
+              <div class="font-presets" id="fontPresets" title="Font Size Presets">
+                <button type="button" class="font-btn" data-size="13.5" data-preset="sm" title="Small Font (13.5px)">A-</button>
+                <button type="button" class="font-btn active" data-size="16" data-preset="md" title="Default Font (16px)">A</button>
+                <button type="button" class="font-btn" data-size="20" data-preset="lg" title="Large Font (20px)">A+</button>
+                <button type="button" class="font-btn" data-size="26" data-preset="xl" title="Extra Large Font (26px)">A++</button>
+              </div>
+
+              <!-- Scale Meter Slider & Controls -->
+              <div class="font-scale-meter" title="Font Scale Meter / फॉन्ट स्केल मीटर (Drag slider to scale font up to 32px)">
+                <button type="button" class="scale-step-btn" id="fontScaleDownBtn" title="Decrease Font Size (छोटा करें)" aria-label="Decrease Font Size">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <div class="scale-track-box">
+                  <input type="range" class="font-scale-slider" id="fontScaleSlider" min="12" max="32" step="1" value="16" aria-label="Font Size Scale Meter" />
+                  <div class="scale-meter-marks" aria-hidden="true">
+                    <span class="scale-mark" title="12px"></span>
+                    <span class="scale-mark" title="16px"></span>
+                    <span class="scale-mark" title="20px"></span>
+                    <span class="scale-mark" title="26px"></span>
+                    <span class="scale-mark" title="32px"></span>
+                  </div>
+                </div>
+                <button type="button" class="scale-step-btn" id="fontScaleUpBtn" title="Increase Font Size (बड़ा करें)" aria-label="Increase Font Size">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <span class="font-scale-badge" id="fontScaleBadge" title="Current Size (Click to reset to 16px)">16px</span>
+              </div>
             </div>
           </div>
         </div>
@@ -505,6 +534,25 @@
           <div class="seg" id="pracSoundSeg">
             <button type="button" data-sound="off" class="active">Off (बंद)</button>
             <button type="button" data-sound="on">On (चालू)</button>
+          </div>
+        </div>
+
+        <!-- Font Size Scale Option (Practice) -->
+        <div class="setup-item" id="pracFontGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">🔍</span> Font Scale / फॉन्ट स्केल
+          </label>
+          <div class="font-scale-meter font-scale-meter-prac" title="Practice Font Scale Meter">
+            <button type="button" class="scale-step-btn" id="pracFontScaleDownBtn" title="Decrease Font Size" aria-label="Decrease Font Size">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <div class="scale-track-box" style="width: 86px;">
+              <input type="range" class="font-scale-slider" id="pracFontScaleSlider" min="12" max="32" step="1" value="16" aria-label="Practice Font Size Scale Meter" />
+            </div>
+            <button type="button" class="scale-step-btn" id="pracFontScaleUpBtn" title="Increase Font Size" aria-label="Increase Font Size">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <span class="font-scale-badge" id="pracFontScaleBadge" title="Click to reset to 16px">16px</span>
           </div>
         </div>
       </div>

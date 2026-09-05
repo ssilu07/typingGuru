@@ -1377,18 +1377,94 @@ if (fsBtn) {
 }
 
 function applyFontSize(size) {
-  document.body.classList.remove("font-sm", "font-md", "font-lg");
-  document.body.classList.add(`font-${size}`);
+  let num;
+  if (size === "sm") num = 13.5;
+  else if (size === "md") num = 16;
+  else if (size === "lg") num = 20;
+  else if (size === "xl") num = 26;
+  else num = parseFloat(size);
+
+  if (isNaN(num)) num = 16;
+  num = Math.max(12, Math.min(32, Math.round(num * 10) / 10));
+
+  const displayVal = num % 1 === 0 ? `${num}px` : `${num.toFixed(1)}px`;
+  const lh = (1.46 + (num - 12) * 0.0055).toFixed(2);
+
+  // Apply variables to root and body
+  document.documentElement.style.setProperty("--exam-font-size", `${num}px`);
+  document.documentElement.style.setProperty("--exam-line-height", lh);
+  document.body.style.setProperty("--exam-font-size", `${num}px`);
+  document.body.style.setProperty("--exam-line-height", lh);
+
+  // Update Body classes for compatibility
+  document.body.classList.remove("font-sm", "font-md", "font-lg", "font-xl");
+  if (num <= 14.5) document.body.classList.add("font-sm");
+  else if (num <= 18) document.body.classList.add("font-md");
+  else if (num <= 23) document.body.classList.add("font-lg");
+  else document.body.classList.add("font-xl");
+
+  // Update Preset buttons active states
   document.querySelectorAll("#fontSizeGroup .font-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.size === size);
+    const bSize = parseFloat(b.dataset.size);
+    b.classList.toggle("active", Math.abs(bSize - num) < 0.8);
   });
-  localStorage.setItem("tg-fontsize", size);
+
+  // Helper to sync slider and fill track
+  const syncSlider = (sliderId, badgeId) => {
+    const slider = el(sliderId);
+    const badge = el(badgeId);
+    if (slider) {
+      slider.value = num;
+      const pct = ((num - 12) / (32 - 12)) * 100;
+      slider.style.background = `linear-gradient(to right, #2563eb 0%, #2563eb ${pct}%, #cbd5e1 ${pct}%, #cbd5e1 100%)`;
+    }
+    if (badge) {
+      badge.textContent = displayVal;
+    }
+  };
+
+  syncSlider("fontScaleSlider", "fontScaleBadge");
+  syncSlider("pracFontScaleSlider", "pracFontScaleBadge");
+
+  localStorage.setItem("tg-fontsize", num);
 }
 
+// Preset button click listeners
 document.querySelectorAll("#fontSizeGroup .font-btn").forEach(btn => {
   btn.addEventListener("click", () => applyFontSize(btn.dataset.size));
 });
-applyFontSize(localStorage.getItem("tg-fontsize") || "md");
+
+// Setup slider and step buttons helper
+function setupScaleControls(sliderId, downBtnId, upBtnId, badgeId) {
+  const slider = el(sliderId);
+  const downBtn = el(downBtnId);
+  const upBtn = el(upBtnId);
+  const badge = el(badgeId);
+
+  if (slider) {
+    slider.addEventListener("input", (e) => applyFontSize(e.target.value));
+  }
+  if (downBtn) {
+    downBtn.addEventListener("click", () => {
+      const cur = parseFloat(slider ? slider.value : 16);
+      applyFontSize(Math.max(12, cur - 1));
+    });
+  }
+  if (upBtn) {
+    upBtn.addEventListener("click", () => {
+      const cur = parseFloat(slider ? slider.value : 16);
+      applyFontSize(Math.min(32, cur + 1));
+    });
+  }
+  if (badge) {
+    badge.addEventListener("click", () => applyFontSize(16));
+  }
+}
+
+setupScaleControls("fontScaleSlider", "fontScaleDownBtn", "fontScaleUpBtn", "fontScaleBadge");
+setupScaleControls("pracFontScaleSlider", "pracFontScaleDownBtn", "pracFontScaleUpBtn", "pracFontScaleBadge");
+
+applyFontSize(localStorage.getItem("tg-fontsize") || "16");
 
 const nameIn = el("nameIn");
 if (nameIn) {
