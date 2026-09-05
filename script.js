@@ -1403,8 +1403,8 @@ function applyFontSize(size) {
   else if (num <= 23) document.body.classList.add("font-lg");
   else document.body.classList.add("font-xl");
 
-  // Update Preset buttons active states
-  document.querySelectorAll("#fontSizeGroup .font-btn").forEach(b => {
+  // Update Preset buttons active states across all panels
+  document.querySelectorAll(".font-btn").forEach(b => {
     const bSize = parseFloat(b.dataset.size);
     b.classList.toggle("active", Math.abs(bSize - num) < 0.8);
   });
@@ -1425,12 +1425,13 @@ function applyFontSize(size) {
 
   syncSlider("fontScaleSlider", "fontScaleBadge");
   syncSlider("pracFontScaleSlider", "pracFontScaleBadge");
+  syncSlider("pracFontScaleSlider2", "pracFontScaleBadge2");
 
   localStorage.setItem("tg-fontsize", num);
 }
 
-// Preset button click listeners
-document.querySelectorAll("#fontSizeGroup .font-btn").forEach(btn => {
+// Preset button click listeners across all groups
+document.querySelectorAll(".font-btn").forEach(btn => {
   btn.addEventListener("click", () => applyFontSize(btn.dataset.size));
 });
 
@@ -1463,6 +1464,18 @@ function setupScaleControls(sliderId, downBtnId, upBtnId, badgeId) {
 
 setupScaleControls("fontScaleSlider", "fontScaleDownBtn", "fontScaleUpBtn", "fontScaleBadge");
 setupScaleControls("pracFontScaleSlider", "pracFontScaleDownBtn", "pracFontScaleUpBtn", "pracFontScaleBadge");
+setupScaleControls("pracFontScaleSlider2", "pracFontScaleDownBtn2", "pracFontScaleUpBtn2", "pracFontScaleBadge2");
+
+const pracFsBtn = el("pracFullscreenBtn");
+if (pracFsBtn) {
+  pracFsBtn.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  });
+}
 
 applyFontSize(localStorage.getItem("tg-fontsize") || "16");
 
