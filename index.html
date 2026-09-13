@@ -366,6 +366,10 @@
           <span class="sound-icon-mute">🔇 Sound: Off</span>
           <span class="sound-icon-on" style="display:none;">🔊 Sound: On</span>
         </button>
+        <button type="button" class="btn btn-ghost btn-sound-toggle active" id="pracHlToggleBtn" title="Toggle Word Highlight / हाइलाइट ऑन-ऑफ">
+          <span class="hl-icon-off" style="display:none;">✨ Highlight: Off</span>
+          <span class="hl-icon-on">✨ Highlight: On</span>
+        </button>
         <button class="btn btn-ghost" id="pracRestartBtn">↺ Restart Drill / रीस्टार्ट</button>
       </div>
     </div>
@@ -526,6 +530,17 @@
           </div>
         </div>
 
+        <!-- Highlight Option (Practice) -->
+        <div class="setup-item" id="pracHlGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">✨</span> Word Highlight / हाइलाइट
+          </label>
+          <div class="seg" id="pracHlSeg">
+            <button type="button" data-hl="on" class="active">On (चालू)</button>
+            <button type="button" data-hl="off">Off (बंद)</button>
+          </div>
+        </div>
+
         <!-- Typing Sound Option (Practice) -->
         <div class="setup-item" id="pracSoundGroup">
           <label class="setup-label">
@@ -604,6 +619,13 @@
                 <polyline points="9 21 3 21 3 15"></polyline>
                 <line x1="21" y1="3" x2="14" y2="10"></line>
                 <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </button>
+
+            <!-- Word Highlight Toggle Button -->
+            <button type="button" class="pill-btn active" id="pracPillHlBtn" title="Word Highlight: ON (चालू - क्लिक करके बंद करें)" aria-label="Toggle highlight">
+              <svg class="pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
               </svg>
             </button>
 

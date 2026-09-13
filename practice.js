@@ -257,6 +257,7 @@ let pracSetIdx = 0;
 let pracDurationSec = 120, pracTimeLeft = 120, pracTimerId = null, pracStartTime = 0;
 let pracStarted = false, pracFinished = false;
 let pracKbMode = "inscript";
+let pracHlMode = localStorage.getItem("tg-prac-hl") || localStorage.getItem("tg-hl") || "on";
 let pracWordsData = [];
 let pracBackspaceCount = 0;
 
@@ -278,6 +279,84 @@ const guideBodyHi = document.getElementById("guideBodyHi");
 const guideBodyEn = document.getElementById("guideBodyEn");
 const guideTitleText = document.getElementById("guideTitleText");
 const pracKbGroup = document.getElementById("pracKbGroup");
+const pracHlGroup = document.getElementById("pracHlGroup");
+const pracHlSeg = document.getElementById("pracHlSeg");
+const pracHlToggleBtn = document.getElementById("pracHlToggleBtn");
+const pracPillHlBtn = document.getElementById("pracPillHlBtn");
+
+/* ── Practice Highlight Control ── */
+function setPracticeHighlight(mode) {
+  pracHlMode = (mode === "off") ? "off" : "on";
+  try {
+    localStorage.setItem("tg-prac-hl", pracHlMode);
+    localStorage.setItem("tg-hl", pracHlMode);
+  } catch (e) {}
+
+  if (typeof hlMode !== "undefined") {
+    hlMode = pracHlMode;
+  }
+
+  // Update Practice Segment Buttons
+  document.querySelectorAll("#pracHlSeg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.hl === pracHlMode);
+  });
+
+  // Update Main Test Segment Buttons
+  document.querySelectorAll("#hlSeg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.hl === pracHlMode);
+  });
+
+  // Update Topbar and Pill Buttons
+  updatePracHighlightUI();
+
+  // Apply or remove no-highlight class on practice passage
+  if (pracPassageEl) {
+    if (pracHlMode === "off") {
+      pracPassageEl.classList.add("no-highlight");
+    } else {
+      pracPassageEl.classList.remove("no-highlight");
+    }
+  }
+
+  // Also sync on main test passage if present
+  const mainPassage = document.getElementById("passage");
+  if (mainPassage) {
+    if (pracHlMode === "off") {
+      mainPassage.classList.add("no-highlight");
+    } else {
+      mainPassage.classList.remove("no-highlight");
+    }
+  }
+
+  pracCompare();
+}
+
+function updatePracHighlightUI() {
+  const isOff = (pracHlMode === "off");
+
+  const topBtn = document.getElementById("pracHlToggleBtn");
+  if (topBtn) {
+    topBtn.classList.toggle("active", !isOff);
+    const offSpan = topBtn.querySelector(".hl-icon-off");
+    const onSpan = topBtn.querySelector(".hl-icon-on");
+    if (offSpan) offSpan.style.display = isOff ? "" : "none";
+    if (onSpan) onSpan.style.display = isOff ? "none" : "";
+    topBtn.title = isOff
+      ? "Word Highlight: OFF (बंद - क्लिक करके चालू करें)"
+      : "Word Highlight: ON (चालू - क्लिक करके बंद करें)";
+  }
+
+  const pillBtn = document.getElementById("pracPillHlBtn");
+  if (pillBtn) {
+    pillBtn.classList.toggle("active", !isOff);
+    pillBtn.title = isOff
+      ? "Word Highlight: OFF (बंद - क्लिक करके चालू करें)"
+      : "Word Highlight: ON (चालू - क्लिक करके बंद करें)";
+  }
+}
+
+window.setPracticeHighlight = setPracticeHighlight;
+window.updatePracHighlightUI = updatePracHighlightUI;
 
 /* ── Helper to Get Active Drills Array ── */
 function getActiveDrills() {
@@ -387,6 +466,9 @@ window.switchPage = function(page, targetLang) {
     }
     document.body.classList.remove("in-test-view");
 
+    // Sync highlight mode on entering practice
+    setPracticeHighlight(pracHlMode);
+
     if (targetLang) {
       setPracticeLang(targetLang);
     } else {
@@ -492,9 +574,14 @@ function loadPracticeDrill() {
     pracWordsData.push({ text: wtext, g: gs, el: wspan, spans: wspans, spaceSpan });
   });
 
-  if (pracWordsData[0]) {
-    pracWordsData[0].el.classList.add("active");
-    if (pracWordsData[0].spans[0]) pracWordsData[0].spans[0].classList.add("cur");
+  if (pracHlMode === "off") {
+    pracPassageEl.classList.add("no-highlight");
+  } else {
+    pracPassageEl.classList.remove("no-highlight");
+    if (pracWordsData[0]) {
+      pracWordsData[0].el.classList.add("active");
+      if (pracWordsData[0].spans[0]) pracWordsData[0].spans[0].classList.add("cur");
+    }
   }
   attachPracticeTooltips();
 }
@@ -569,42 +656,45 @@ function pracCompare() {
     if (w.spaceSpan) w.spaceSpan.className = "g";
   });
 
-  aligned.forEach(item => {
-    if (item.targetIdx === null) return;
-    const w = pracWordsData[item.targetIdx];
-    if (!w) return;
-    if (item.isCurrent) {
-      w.el.classList.add("active");
-      const uG = (pracLang === "hindi" && typeof graphemes === "function")
-        ? graphemes(item.typed)
-        : Array.from(item.typed);
-      w.spans.forEach((s, idx) => {
-        if (idx < uG.length) {
-          s.classList.add(uG[idx] === w.g[idx] ? "ok" : "bad");
-        } else if (idx === uG.length) {
-          s.classList.add("cur");
-        }
-      });
-    } else {
-      if (item.target === item.typed) {
-        w.el.classList.add("done-ok");
+  if (pracHlMode !== "off") {
+    aligned.forEach(item => {
+      if (item.targetIdx === null) return;
+      const w = pracWordsData[item.targetIdx];
+      if (!w) return;
+      if (item.isCurrent) {
+        w.el.classList.add("active");
+        const uG = (pracLang === "hindi" && typeof graphemes === "function")
+          ? graphemes(item.typed)
+          : Array.from(item.typed);
+        w.spans.forEach((s, idx) => {
+          if (idx < uG.length) {
+            s.classList.add(uG[idx] === w.g[idx] ? "ok" : "bad");
+          } else if (idx === uG.length) {
+            s.classList.add("cur");
+          }
+        });
       } else {
-        w.el.classList.add("done-bad");
+        if (item.target === item.typed) {
+          w.el.classList.add("done-ok");
+        } else {
+          w.el.classList.add("done-bad");
+        }
       }
-    }
-  });
+    });
 
-  const curItem = aligned.find(it => it.isCurrent);
-  if (!curItem && bestI < pracWordsData.length && !pracFinished) {
-    const nextW = pracWordsData[bestI];
-    if (nextW) {
-      nextW.el.classList.add("active");
-      if (nextW.spans[0]) nextW.spans[0].classList.add("cur");
+    const curItem = aligned.find(it => it.isCurrent);
+    if (!curItem && bestI < pracWordsData.length && !pracFinished) {
+      const nextW = pracWordsData[bestI];
+      if (nextW) {
+        nextW.el.classList.add("active");
+        if (nextW.spans[0]) nextW.spans[0].classList.add("cur");
+      }
     }
   }
 
   // Auto-scroll passage
-  const activeWordEl = pracPassageEl.querySelector(".word.active");
+  const activeWordEl = (pracHlMode !== "off" ? pracPassageEl.querySelector(".word.active") : null)
+    || (pracWordsData[bestI] ? pracWordsData[bestI].el : null);
   if (activeWordEl) {
     const parent = pracPassageEl.parentElement;
     if (parent) {
@@ -910,6 +1000,30 @@ function setupPracticeEvents() {
     });
   }
 
+  // Highlight Segment Switcher (Practice Configuration)
+  document.querySelectorAll("#pracHlSeg button").forEach(b => {
+    b.addEventListener("click", () => {
+      setPracticeHighlight(b.dataset.hl);
+      if (pracInputEl) pracInputEl.focus();
+    });
+  });
+
+  // Highlight Toggle Button (Practice Topbar)
+  if (pracHlToggleBtn) {
+    pracHlToggleBtn.addEventListener("click", () => {
+      setPracticeHighlight(pracHlMode === "off" ? "on" : "off");
+      if (pracInputEl) pracInputEl.focus();
+    });
+  }
+
+  // Highlight Pill Button (Practice Arena Control Bar)
+  if (pracPillHlBtn) {
+    pracPillHlBtn.addEventListener("click", () => {
+      setPracticeHighlight(pracHlMode === "off" ? "on" : "off");
+      if (pracInputEl) pracInputEl.focus();
+    });
+  }
+
   const openPracticeNavBtn = document.getElementById("openPracticeNavBtn");
   if (openPracticeNavBtn) {
     openPracticeNavBtn.addEventListener("click", () => {
@@ -988,12 +1102,14 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     initPracticeCategories();
     fillPracticeSets();
+    setPracticeHighlight(pracHlMode);
     loadPracticeDrill();
     setupPracticeEvents();
   });
 } else {
   initPracticeCategories();
   fillPracticeSets();
+  setPracticeHighlight(pracHlMode);
   loadPracticeDrill();
   setupPracticeEvents();
 }

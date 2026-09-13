@@ -1340,6 +1340,7 @@ document.querySelectorAll("#hlSeg button").forEach(b => {
     b.classList.add("active");
     hlMode = b.dataset.hl;
     localStorage.setItem("tg-hl", hlMode);
+    localStorage.setItem("tg-prac-hl", hlMode);
     if (hlMode === "off") {
       passageEl.classList.add("no-highlight");
     } else {
@@ -1347,6 +1348,10 @@ document.querySelectorAll("#hlSeg button").forEach(b => {
     }
     compare();
     inputEl.focus();
+
+    if (typeof setPracticeHighlight === "function") {
+      setPracticeHighlight(hlMode);
+    }
   });
 });
 
@@ -1620,6 +1625,9 @@ document.querySelectorAll("#hlSeg button").forEach(b => {
 });
 if (hlMode === "off") {
   passageEl.classList.add("no-highlight");
+}
+if (typeof setPracticeHighlight === "function") {
+  setPracticeHighlight(hlMode);
 }
 
 fillSelect();

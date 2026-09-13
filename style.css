@@ -982,8 +982,17 @@ body.lang-hindi .passage {
   background-color: rgba(220, 38, 38, 0.16);
   text-decoration: underline;
 }
-.passage.no-highlight .word.active { background-color: transparent; outline: none; }
-.passage.no-highlight span.g { color: inherit; background-color: transparent; text-decoration: none; }
+.passage.no-highlight .word.active,
+.passage.no-highlight .word.done-ok,
+.passage.no-highlight .word.done-bad {
+  background-color: transparent;
+  outline: none;
+}
+.passage.no-highlight span.g {
+  color: inherit;
+  background-color: transparent;
+  text-decoration: none;
+}
 
 /* 5. Lower Typing Box (Lime Green) */
 .exam-typing-box {
