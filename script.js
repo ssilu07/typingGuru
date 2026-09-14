@@ -1105,6 +1105,7 @@ function reset() {
   }
   loadPassage();
   updateHintsAndPlaceholder();
+  if (typeof updateTypeBoxUI === "function") updateTypeBoxUI();
   const testView = el("viewTest");
   if (testView && testView.style.display !== "none") {
     inputEl.focus();
@@ -1381,6 +1382,132 @@ if (fsBtn) {
   });
 }
 
+/* ── Typing Box Visibility (Show/Hide) ── */
+let typeBoxVisible = (localStorage.getItem("tg-typebox") !== "hidden"); // Default true (visible)
+
+function setTypeBoxVisibility(mode, save = true) {
+  typeBoxVisible = (mode === "visible" || mode === true);
+  if (save) {
+    try {
+      localStorage.setItem("tg-typebox", typeBoxVisible ? "visible" : "hidden");
+    } catch (e) {}
+  }
+
+  updateTypeBoxUI();
+
+  // Keep active input focused so user can continue typing seamlessly
+  const practiceView = document.getElementById("viewPractice");
+  const activeInput = (practiceView && practiceView.style.display !== "none")
+    ? document.getElementById("pracInput")
+    : document.getElementById("input");
+  if (activeInput && !activeInput.disabled) {
+    activeInput.focus();
+  }
+}
+
+function updateTypeBoxUI() {
+  const isVis = typeBoxVisible;
+
+  // Toggle class on all exam typing boxes and panels
+  document.querySelectorAll(".exam-typing-box").forEach(box => {
+    box.classList.toggle("typing-box-hidden", !isVis);
+  });
+  document.querySelectorAll(".exam-panel, .prac-panel").forEach(p => {
+    p.classList.toggle("typebox-hidden", !isVis);
+  });
+
+  // Top action bar toggle buttons
+  const topBtns = [
+    document.getElementById("testTypeBoxToggleBtn"),
+    document.getElementById("pracTypeBoxToggleBtn")
+  ];
+  topBtns.forEach(btn => {
+    if (!btn) return;
+    btn.classList.toggle("active", isVis);
+    btn.classList.toggle("hidden-mode", !isVis);
+    const visIcon = btn.querySelector(".tb-icon-visible");
+    const hidIcon = btn.querySelector(".tb-icon-hidden");
+    if (visIcon) visIcon.style.display = isVis ? "" : "none";
+    if (hidIcon) hidIcon.style.display = isVis ? "none" : "";
+    btn.title = isVis
+      ? "Typing Box: Visible (क्लिक करके छिपाएं)"
+      : "Typing Box: Hidden (क्लिक करके दिखाएं)";
+  });
+
+  // Control pill buttons
+  const pillBtns = [
+    document.getElementById("pillTypeBoxBtn"),
+    document.getElementById("pracPillTypeBoxBtn")
+  ];
+  pillBtns.forEach(btn => {
+    if (!btn) return;
+    btn.classList.toggle("active", isVis);
+    btn.classList.toggle("hidden-mode", !isVis);
+    const visSvg = btn.querySelector(".tb-pill-icon-visible");
+    const hidSvg = btn.querySelector(".tb-pill-icon-hidden");
+    if (visSvg) visSvg.style.display = isVis ? "" : "none";
+    if (hidSvg) hidSvg.style.display = isVis ? "none" : "";
+    btn.title = isVis
+      ? "Typing Box: Visible (चालू - क्लिक करके छिपाएं)"
+      : "Typing Box: Hidden (छिपा हुआ - क्लिक करके दिखाएं)";
+  });
+
+  // Setup segment buttons
+  const segs = [
+    document.getElementById("typeBoxSeg"),
+    document.getElementById("pracTypeBoxSeg")
+  ];
+  segs.forEach(seg => {
+    if (!seg) return;
+    seg.querySelectorAll("button").forEach(b => {
+      const val = b.dataset.typebox;
+      b.classList.toggle("active", isVis ? (val === "visible") : (val === "hidden"));
+    });
+  });
+}
+
+// Global exposure for practice.js and window scope
+window.setTypeBoxVisibility = setTypeBoxVisibility;
+window.updateTypeBoxUI = updateTypeBoxUI;
+Object.defineProperty(window, "typeBoxVisible", {
+  get() { return typeBoxVisible; },
+  set(v) { setTypeBoxVisibility(v); },
+  configurable: true
+});
+
+// Setup Segment in viewSetup
+document.querySelectorAll("#typeBoxSeg button").forEach(b => {
+  b.addEventListener("click", () => {
+    setTypeBoxVisibility(b.dataset.typebox === "visible");
+  });
+});
+
+// Topbar Toggle Button in viewTest
+const testTypeBoxToggleBtn = el("testTypeBoxToggleBtn");
+if (testTypeBoxToggleBtn) {
+  testTypeBoxToggleBtn.addEventListener("click", () => {
+    setTypeBoxVisibility(!typeBoxVisible);
+  });
+}
+
+// Pill Button in viewTest
+const pillTypeBoxBtn = el("pillTypeBoxBtn");
+if (pillTypeBoxBtn) {
+  pillTypeBoxBtn.addEventListener("click", () => {
+    setTypeBoxVisibility(!typeBoxVisible);
+  });
+}
+
+// Ensure clicking anywhere on exam panel focuses input
+const testExamPanel = document.querySelector(".exam-panel:not(.prac-panel)");
+if (testExamPanel) {
+  testExamPanel.addEventListener("click", (e) => {
+    if (!e.target.closest("button, input, select, .exam-control-bar")) {
+      if (inputEl && !inputEl.disabled) inputEl.focus();
+    }
+  });
+}
+
 function applyFontSize(size) {
   let num;
   if (size === "sm") num = 13.5;
@@ -1632,3 +1759,4 @@ if (typeof setPracticeHighlight === "function") {
 
 fillSelect();
 reset();
+updateTypeBoxUI();

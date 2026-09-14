@@ -544,7 +544,7 @@ function loadPracticeDrill() {
   const setObj = (catObj && catObj.sets[pracSetIdx]) ? catObj.sets[pracSetIdx] : (catObj ? catObj.sets[0] : null);
   if (!setObj) return;
 
-  const words = setObj.text.split(" ");
+  const words = setObj.text.trim().split(/\s+/).filter(w => w.length > 0);
   pracPassageEl.innerHTML = "";
   pracWordsData = [];
 
@@ -818,6 +818,7 @@ function pracReset() {
   if (pracEngWarn) pracEngWarn.classList.remove("show");
   if (typeof hideTip === "function") hideTip();
   loadPracticeDrill();
+  if (typeof window.updateTypeBoxUI === "function") window.updateTypeBoxUI();
 
   const practiceView = document.getElementById("viewPractice");
   if (practiceView && practiceView.style.display !== "none" && pracInputEl) {
@@ -835,45 +836,11 @@ function checkPracAutoFinish() {
   const N = pracWordsData.length;
   if (N === 0) return;
 
-  const lastW = pracWordsData[N - 1];
-  const lastTyped = tws[tws.length - 1];
   const hasTrailingSpace = /\s$/.test(rawVal);
 
-  // 1. If more tokens typed than passage words
-  if (tws.length > N) {
-    pracFinish();
-    return;
-  }
-
-  // 2. If exactly N tokens typed (reached the last word)
-  if (tws.length === N) {
-    // 2a. Trailing space or token completed
-    if (hasTrailingSpace || !lastTyped.isCurrent) {
-      pracFinish();
-      return;
-    }
-    // 2b. Exact text match
-    if (lastTyped.text === lastW.text) {
-      pracFinish();
-      return;
-    }
-    // 2c. Grapheme length comparison
-    const targetLen = (pracLang === "hindi" && typeof graphemes === "function")
-      ? graphemes(lastW.text).length
-      : Array.from(lastW.text).length;
-    const typedLen = (pracLang === "hindi" && typeof graphemes === "function")
-      ? graphemes(lastTyped.text).length
-      : Array.from(lastTyped.text).length;
-
-    if (typedLen >= targetLen) {
-      pracFinish();
-      return;
-    }
-  }
-
-  // 3. Check alignment from pracCompare()
-  const { bestI } = pracCompare();
-  if (bestI >= N) {
+  // Auto-finish ONLY when all words in the drill passage have been typed
+  // AND the user presses Space after completing the last word.
+  if (tws.length > N || (tws.length === N && hasTrailingSpace)) {
     pracFinish();
     return;
   }
@@ -1024,6 +991,50 @@ function setupPracticeEvents() {
     });
   }
 
+  // Typing Box Segment (Practice Configuration)
+  document.querySelectorAll("#pracTypeBoxSeg button").forEach(b => {
+    b.addEventListener("click", () => {
+      if (typeof window.setTypeBoxVisibility === "function") {
+        window.setTypeBoxVisibility(b.dataset.typebox === "visible");
+      }
+    });
+  });
+
+  // Typing Box Toggle Button (Practice Topbar)
+  const pracTypeBoxToggleBtn = document.getElementById("pracTypeBoxToggleBtn");
+  if (pracTypeBoxToggleBtn) {
+    pracTypeBoxToggleBtn.addEventListener("click", () => {
+      if (typeof window.setTypeBoxVisibility === "function") {
+        window.setTypeBoxVisibility(!window.typeBoxVisible);
+      }
+    });
+  }
+
+  // Typing Box Pill Button (Practice Arena Control Bar)
+  const pracPillTypeBoxBtn = document.getElementById("pracPillTypeBoxBtn");
+  if (pracPillTypeBoxBtn) {
+    pracPillTypeBoxBtn.addEventListener("click", () => {
+      if (typeof window.setTypeBoxVisibility === "function") {
+        window.setTypeBoxVisibility(!window.typeBoxVisible);
+      }
+    });
+  }
+
+  // Focus typing input when clicking on practice passage or arena
+  if (pracPassageEl) {
+    pracPassageEl.addEventListener("click", () => {
+      if (pracInputEl && !pracInputEl.disabled) pracInputEl.focus();
+    });
+  }
+  const pracPanelEl = document.querySelector(".prac-panel");
+  if (pracPanelEl) {
+    pracPanelEl.addEventListener("click", (e) => {
+      if (!e.target.closest("button, input, select, .exam-control-bar")) {
+        if (pracInputEl && !pracInputEl.disabled) pracInputEl.focus();
+      }
+    });
+  }
+
   const openPracticeNavBtn = document.getElementById("openPracticeNavBtn");
   if (openPracticeNavBtn) {
     openPracticeNavBtn.addEventListener("click", () => {
@@ -1105,6 +1116,7 @@ if (document.readyState === "loading") {
     setPracticeHighlight(pracHlMode);
     loadPracticeDrill();
     setupPracticeEvents();
+    if (typeof window.updateTypeBoxUI === "function") window.updateTypeBoxUI();
   });
 } else {
   initPracticeCategories();
@@ -1112,4 +1124,5 @@ if (document.readyState === "loading") {
   setPracticeHighlight(pracHlMode);
   loadPracticeDrill();
   setupPracticeEvents();
+  if (typeof window.updateTypeBoxUI === "function") window.updateTypeBoxUI();
 }

@@ -162,6 +162,17 @@
           </div>
         </div>
 
+        <!-- Typing Box Option -->
+        <div class="setup-item" id="typeBoxGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">👁️</span> Typing Box / टंकण बॉक्स
+          </label>
+          <div class="seg" id="typeBoxSeg">
+            <button type="button" data-typebox="visible" class="active">Visible (दिखाएं)</button>
+            <button type="button" data-typebox="hidden">Hidden (छिपाएं)</button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Start Typing Button -->
@@ -200,6 +211,10 @@
         ← Back to Settings / सेटिंग्स बदलें
       </button>
       <div class="test-topbar-actions">
+        <button type="button" class="btn btn-ghost btn-typebox-toggle" id="testTypeBoxToggleBtn" title="Toggle Typing Box / टाइपिंग बॉक्स दिखाएं-छिपाएं">
+          <span class="tb-icon-visible">👁️ Typing Box: Visible</span>
+          <span class="tb-icon-hidden" style="display:none;">🙈 Typing Box: Hidden</span>
+        </button>
         <button class="btn btn-ghost" id="restartBtn">↺ Restart Test</button>
       </div>
     </div>
@@ -260,6 +275,20 @@
                 <polyline points="9 21 3 21 3 15"></polyline>
                 <line x1="21" y1="3" x2="14" y2="10"></line>
                 <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </button>
+
+            <!-- Typing Box Toggle Button in Pill -->
+            <button type="button" class="pill-btn active" id="pillTypeBoxBtn" title="Typing Box: Visible (चालू - क्लिक करके छिपाएं)" aria-label="Toggle typing box">
+              <svg class="pill-icon tb-pill-icon-visible" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="pill-icon tb-pill-icon-hidden" style="display:none;" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                <line x1="2" y1="2" x2="22" y2="22"/>
               </svg>
             </button>
 
@@ -362,6 +391,10 @@
         ← Back to Exam Portal / मुख्य पोर्टल
       </button>
       <div class="test-topbar-actions">
+        <button type="button" class="btn btn-ghost btn-typebox-toggle" id="pracTypeBoxToggleBtn" title="Toggle Typing Box / टाइपिंग बॉक्स दिखाएं-छिपाएं">
+          <span class="tb-icon-visible">👁️ Typing Box: Visible</span>
+          <span class="tb-icon-hidden" style="display:none;">🙈 Typing Box: Hidden</span>
+        </button>
         <button type="button" class="btn btn-ghost btn-sound-toggle" id="pracAudioToggleBtn" title="Toggle Keypress Sound">
           <span class="sound-icon-mute">🔇 Sound: Off</span>
           <span class="sound-icon-on" style="display:none;">🔊 Sound: On</span>
@@ -552,6 +585,17 @@
           </div>
         </div>
 
+        <!-- Typing Box Option (Practice) -->
+        <div class="setup-item" id="pracTypeBoxGroup">
+          <label class="setup-label">
+            <span class="lbl-icon">👁️</span> Typing Box / टंकण बॉक्स
+          </label>
+          <div class="seg" id="pracTypeBoxSeg">
+            <button type="button" data-typebox="visible" class="active">Visible (दिखाएं)</button>
+            <button type="button" data-typebox="hidden">Hidden (छिपाएं)</button>
+          </div>
+        </div>
+
         <!-- Font Size Scale Option (Practice) -->
         <div class="setup-item" id="pracFontGroup">
           <label class="setup-label">
@@ -626,6 +670,20 @@
             <button type="button" class="pill-btn active" id="pracPillHlBtn" title="Word Highlight: ON (चालू - क्लिक करके बंद करें)" aria-label="Toggle highlight">
               <svg class="pill-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
+              </svg>
+            </button>
+
+            <!-- Practice Typing Box Toggle Button in Pill -->
+            <button type="button" class="pill-btn active" id="pracPillTypeBoxBtn" title="Typing Box: Visible (चालू - क्लिक करके छिपाएं)" aria-label="Toggle typing box">
+              <svg class="pill-icon tb-pill-icon-visible" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="pill-icon tb-pill-icon-hidden" style="display:none;" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                <line x1="2" y1="2" x2="22" y2="22"/>
               </svg>
             </button>
 
