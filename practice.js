@@ -149,8 +149,34 @@ const ENGLISH_PRACTICE_DRILLS = [
     ]
   },
   {
+    id: "en_common_words",
+    name: "2. Common Words & Sight Vocabulary (this, that, these, those, their, also, the, is, are...)",
+    sets: [
+      {
+        name: "Common Words 1 — Demonstratives & Pronouns (this, that, these, those, their, there, they, them)",
+        text: "this that these those this that these those their there they them this that these those their there they them this book that pen these days those times their work there they are this house that car these trees those birds their family there they go this is that was these are those were their plan there it is this idea that goal these steps those results their success there they stand this person that place these things those people their effort there they work this man that woman these children those students their school there they learn this question that answer these problems those solutions their answers there they come this way that road these paths those routes their journey there they reach this story that movie these songs those pictures their memory there they stay this and that these and those their own there they will be this that these those their there they them this that these those their there they them"
+      },
+      {
+        name: "Common Words 2 — Articles, Conjunctions & Connectors (the, a, an, and, also, but, or, so, as, if)",
+        text: "the a an and also the a an and also but or so as if of to in on with for at by from about into through after before between under over again also the a an and but or so the boy and a girl also with an apple and the orange for the teacher and a student in the school with the books on a table at the desk by the window from the library about the world into the garden through an open door because the work is done although they are busy since the morning while they read until the evening unless they stop either this or that neither this nor that also the man and a woman with an idea for a project and the result of the effort the and a an also but or so as if of to in on with for at by from about into through again also the a an and but or so"
+      },
+      {
+        name: "Common Words 3 — Auxiliary & Helping Verbs (is, am, are, was, were, be, been, being, have, has, had, do)",
+        text: "is am are was were is am are was were be been being have has had do does did can could will would shall should may might must I am you are he is she is it is we are they are I was you were he was she was it was we were they were I have you have he has she has it has we have they have I had you had he had she had it had we had they had I do you do he does she does it does we do they do I did you did he did she did it did we did they did this is that was these are those were there is there are there was there were it has been they have been we are being he was being you can do they will do we would like it should be they must know who is what was where are when were how do why does is am are was were be been being have has had do does did can could will would shall should may might must"
+      },
+      {
+        name: "Common Words 4 — Fluent Core Sentences (Combined Drill: this, that, these, those, their, also, the, a, and, is, are, am)",
+        text: "This is the right way and that is also a good plan. These are their new books and those are also very useful for the class. I am sure that you are ready and they are also prepared for this test. There is a great opportunity here and this is the best time to act. They said that this decision is fair and that proposal is also acceptable. These students are working hard and those teachers are also guiding them well. What is this matter about and who is that person over there? This was an important day and that was also a memorable event. Their dedication is genuine and we are also happy with their progress. Is this their final report or is that still being prepared? These were the exact reasons and those were also discussed in the meeting. We have this responsibility and they also share that duty with us. It is clear that this effort and that support will ensure their success. All of these points and all of those guidelines are necessary for every candidate."
+      },
+      {
+        name: "Common Words 5 — Top 100 Most Frequent English Words (Rapid Rhythm & Muscle Memory)",
+        text: "the of and a to in is you that it he was for on are as with his they I at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see number no way could people my than first water been call who oil its now find long down day did get come made may part the of and a to in is you that it he was for on are as with his they at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see"
+      }
+    ]
+  },
+  {
     id: "en_shift_capitals",
-    name: "2. Shift Keys & Capitalization (Uppercase & Acronyms)",
+    name: "3. Shift Keys & Capitalization (Uppercase & Acronyms)",
     sets: [
       {
         name: "Proper Nouns & World Geography (Capitals & Place Names)",
@@ -168,7 +194,7 @@ const ENGLISH_PRACTICE_DRILLS = [
   },
   {
     id: "en_punctuation_symbols",
-    name: "3. Punctuation & Special Symbols (Quotes, Semicolons & Symbols)",
+    name: "4. Punctuation & Special Symbols (Quotes, Semicolons & Symbols)",
     sets: [
       {
         name: "Quotes, Semicolons, Colons & Hyphens (Exam Punctuation Drill)",
@@ -186,7 +212,7 @@ const ENGLISH_PRACTICE_DRILLS = [
   },
   {
     id: "en_numbers_alphanumeric",
-    name: "4. Numbers & Alphanumeric Drills (Number Row & Codes)",
+    name: "5. Numbers & Alphanumeric Drills (Number Row & Codes)",
     sets: [
       {
         name: "Top Number Row Mastery (0-9 Digits & Mixed Alphanumeric Sequences)",
@@ -200,7 +226,7 @@ const ENGLISH_PRACTICE_DRILLS = [
   },
   {
     id: "en_tricky_spellings",
-    name: "5. Tricky Words & Double Letters (Complex Spellings)",
+    name: "6. Tricky Words & Double Letters (Complex Spellings)",
     sets: [
       {
         name: "Double Letters Muscle Memory (cc, mm, ss, rr, ll, nn, pp, tt)",
@@ -218,7 +244,7 @@ const ENGLISH_PRACTICE_DRILLS = [
   },
   {
     id: "en_speed_booster",
-    name: "6. Exam Speed Booster Passages (High Speed Exam Passages)",
+    name: "7. Exam Speed Booster Passages (High Speed Exam Passages)",
     sets: [
       {
         name: "Speed Booster 1 — Constitution, Rule of Law & Public Administration",
@@ -390,7 +416,7 @@ function setPracticeLang(newLang) {
   if (pracHeroDesc) {
     pracHeroDesc.textContent = (pracLang === "hindi")
       ? "हिंदी टाइपिंग में स्पीड बढ़ाने के लिए मात्राओं, हलंत (अर्धाक्षर) और Shift की वर्णों की अलग से डेली ड्रिल प्रैक्टिस करें।"
-      : "Master touch typing rows, capital shift keys, punctuation, tricky spellings, numbers, and legal speed booster passages.";
+      : "Master touch typing rows, common sight words (this, that, these, those, the, is, are...), capital shift keys, punctuation, tricky spellings, numbers, and speed booster passages.";
   }
 
   // Update Cheatsheet Guide
